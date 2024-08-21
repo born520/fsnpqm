@@ -5,15 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Google Sheets Data</title>
   <link rel="stylesheet" href="styles.css">
-
-  <!-- 페이지 로드 시 로컬 스토리지를 초기화 -->
-  <script>
-    localStorage.clear();
-  </script>
 </head>
 <body>
-  <div id="loading-indicator">최신 할인 요금 적용을 위해 인증중입니다. 잠시만 기다려주세요.</div> <!-- 로딩 메시지 변경 -->
+  <div id="loading-indicator">최신 할인 요금 적용을 위해 인증중입니다. 잠시만 기다려주세요.</div> <!-- 로딩 메시지 -->
   <table id="data-table" style="display:none;"></table> <!-- 테이블 초기에는 숨김 -->
   <script src="script.js"></script>
+  <script src="cacheHandler.js"></script> <!-- 새로운 JS 파일 추가 -->
 </body>
 </html>
