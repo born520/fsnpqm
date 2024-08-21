@@ -47,13 +47,37 @@ function renderTable(data) {
   const table = document.getElementById('data-table');
   const fragment = document.createDocumentFragment();
 
-  data.tableData.forEach(row => {
+  data.tableData.forEach((row, rowIndex) => {
     const tr = document.createElement('tr');
-    row.forEach(cellData => {
+
+    if (data.rowHeights && data.rowHeights[rowIndex]) {
+      tr.style.height = data.rowHeights[rowIndex] + 'px';
+    }
+
+    row.forEach((cellData, colIndex) => {
       const td = document.createElement('td');
-      td.textContent = typeof cellData === 'object' ? cellData.text : cellData;
+      
+      // 셀 스타일 적용
+      if (typeof cellData === 'object') {
+        td.innerHTML = cellData.richText || cellData.text || '';
+        td.style.backgroundColor = cellData.backgroundColor || '';
+        td.style.color = cellData.textColor || '';
+        td.style.textAlign = cellData.horizontalAlignment || 'center';
+        td.style.verticalAlign = cellData.verticalAlignment || 'middle';
+        td.style.fontWeight = cellData.bold ? 'bold' : 'normal';
+        td.style.fontSize = (cellData.fontSize || 14) + 'px';
+      } else {
+        td.textContent = cellData;
+      }
+
+      // 셀 너비 적용
+      if (data.columnWidths && data.columnWidths[colIndex]) {
+        td.style.width = data.columnWidths[colIndex] + 'px';
+      }
+
       tr.appendChild(td);
     });
+
     fragment.appendChild(tr);
   });
 
