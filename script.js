@@ -1,7 +1,11 @@
 async function fetchData() {
   try {
-    // 로컬 스토리지에서 캐시된 데이터를 가져오기
-    const cachedData = localStorage.getItem('cachedTableData');
+    // 현재 페이지의 경로를 고유 식별자로 사용
+    const pageIdentifier = window.location.pathname;
+
+    // 페이지별 캐시된 데이터를 가져오기
+    const cachedData = localStorage.getItem(`cachedTableData_${pageIdentifier}`);
+    
     if (cachedData) {
       renderTable(JSON.parse(cachedData), false);
       document.getElementById('loading-indicator').style.display = 'none';
@@ -9,20 +13,19 @@ async function fetchData() {
     }
 
     // Google Sheets 데이터를 비동기적으로 가져오기
-    const response = await fetch('https://script.google.com/macros/s/AKfycbxlWGaTrXFykS1al6avOG4L3rq2SxCg5TEXEspr3x99x5a6HcNZkGMgbiPDB-lWFn1ptQ/exec');
+    const response = await fetch('https://script.google.com/macros/s/AKfycbwJh55eAwKMubOUmq0N0NtIZ83N4EthpC4hC_QNKwpx2vF8PyLrm05ffwgLYfTSxSA/exec');
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
     const result = await response.json();
-
-    // 데이터 변경 여부 확인 후 업데이트
     const currentHash = hashData(result.tableData);
-    const previousHash = localStorage.getItem('dataHash');
+    const previousHash = localStorage.getItem(`dataHash_${pageIdentifier}`);
+    
     if (currentHash !== previousHash) {
       renderTable(result, true);
-      localStorage.setItem('cachedTableData', JSON.stringify(result));
-      localStorage.setItem('dataHash', currentHash);
+      localStorage.setItem(`cachedTableData_${pageIdentifier}`, JSON.stringify(result));
+      localStorage.setItem(`dataHash_${pageIdentifier}`, currentHash);
     }
 
     document.getElementById('loading-indicator').style.display = 'none';
@@ -55,7 +58,7 @@ function renderTable(data, isUpdate) {
   const mergeMap = {};
   data.mergedCells.forEach(cell => {
     for (let i = 0; i < cell.numRows; i++) {
-      for (let j = 0; j < cell.numColumns; j++) {
+      for (let j = 0; i < cell.numColumns; j++) {
         const key = `${cell.row + i}-${cell.column + j}`;
         mergeMap[key] = { masterRow: cell.row, masterColumn: cell.column };
       }
