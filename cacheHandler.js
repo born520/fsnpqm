@@ -7,6 +7,7 @@ async function fetchDataAndRender() {
     renderTable(JSON.parse(cachedData));
     document.getElementById('loading-indicator').style.display = 'none';
     document.getElementById('data-table').style.display = 'block';
+    return; // 캐시된 데이터가 있으면 여기서 종료
   }
 
   // 최신 데이터를 비동기적으로 가져오기
@@ -71,6 +72,7 @@ function renderTable(data) {
         }
 
         if (typeof cellData === 'object') {
+          // 셀 스타일 적용
           td.innerHTML = cellData.richText || cellData.text || '';
           td.style.backgroundColor = cellData.backgroundColor || '';
           td.style.color = cellData.textColor || '';
@@ -79,12 +81,15 @@ function renderTable(data) {
           td.style.fontWeight = cellData.bold ? 'bold' : 'normal';
           td.style.fontSize = (cellData.fontSize || 14) + 'px';
           td.style.fontFamily = cellData.fontFamily || 'Arial, sans-serif';
+
           if (cellData.italic) {
             td.style.fontStyle = 'italic';
           }
+
           if (cellData.underline) {
             td.style.textDecoration = 'underline';
           }
+
           if (cellData.strikethrough) {
             td.style.textDecoration = td.style.textDecoration ? `${td.style.textDecoration} line-through` : 'line-through';
           }
@@ -105,4 +110,5 @@ function renderTable(data) {
   });
 }
 
+// DOMContentLoaded 이벤트 리스너 설정
 document.addEventListener('DOMContentLoaded', fetchDataAndRender);
