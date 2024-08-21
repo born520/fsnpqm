@@ -36,6 +36,75 @@ async function fetchAndCacheData() {
   }
 }
 
+function renderTable(data, isUpdate) {
+  if (data.error) {
+    console.error('Error in data:', data.error);
+    document.getElementById('data-table').innerHTML = "<tr><td>Error in data</td></tr>";
+    return;
+  }
+
+  // 테이블 내용을 초기화
+  const table = document.getElementById('data-table');
+  table.innerHTML = ''; // 기존 테이블 내용 삭제
+
+  const fragment = document.createDocumentFragment();
+  const columnWidths = data.columnWidths || [];
+
+  const mergeMap = {};
+  data.mergedCells.forEach(cell => {
+    for (let i = 0; i < cell.numRows; i++) {
+      for (let j = 0; i < cell.numColumns; j++) {
+        const key = `${cell.row + i}-${cell.column + j}`;
+        mergeMap[key] = { masterRow: cell.row, masterColumn: cell.column };
+      }
+    }
+  });
+
+  data.tableData.forEach((row, rowIndex) => {
+    const tr = document.createElement('tr');
+
+    if (data.rowHeights && data.rowHeights[rowIndex]) {
+      tr.style.height = data.rowHeights[rowIndex] + 'px';
+    }
+
+    row.forEach((cellData, colIndex) => {
+      const cellKey = `${rowIndex + 1}-${colIndex + 1}`;
+      const mergeInfo = mergeMap[cellKey];
+
+      if (!mergeInfo || (mergeInfo.masterRow === rowIndex + 1 && mergeInfo.masterColumn === colIndex + 1)) {
+        const td = document.createElement('td');
+
+        if (typeof cellData === 'object') {
+          td.innerHTML = cellData.richText || cellData.text || '';
+        } else {
+          td.innerHTML = cellData;
+        }
+
+        applyStyles(td, rowIndex, colIndex, data);
+
+        if (data.columnWidths && data.columnWidths[colIndex]) {
+          td.style.width = data.columnWidths[colIndex] + 'px';
+        }
+
+        if (mergeInfo) {
+          const mergedCell = data.mergedCells.find(cell => cell.row === mergeInfo.masterRow && cell.column === mergeInfo.masterColumn);
+          if (mergedCell) {
+            td.rowSpan = mergedCell.numRows;
+            td.colSpan = mergedCell.numColumns;
+          }
+        }
+
+        td.style.whiteSpace = 'pre-wrap';
+        tr.appendChild(td);
+      }
+    });
+
+    fragment.appendChild(tr);
+  });
+
+  table.appendChild(fragment); // 새로 만든 테이블을 추가
+}
+
 function hashData(data) {
   return JSON.stringify(data).length;
 }
