@@ -1,7 +1,16 @@
+function getQueryParam(param) {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get(param);
+}
+
 async function fetchData() {
   try {
+    const page = getQueryParam('page') || 'default';
+    const cacheKey = `cachedTableData_${page}`;
+    const hashKey = `dataHash_${page}`;
+
     // 로컬 스토리지에서 캐시된 데이터를 가져오기
-    const cachedData = localStorage.getItem('cachedTableData');
+    const cachedData = localStorage.getItem(cacheKey);
     if (cachedData) {
       renderTable(JSON.parse(cachedData), false);
       document.getElementById('loading-indicator').style.display = 'none';
@@ -18,11 +27,11 @@ async function fetchData() {
 
     // 데이터 변경 여부 확인 후 업데이트
     const currentHash = hashData(result.tableData);
-    const previousHash = localStorage.getItem('dataHash');
+    const previousHash = localStorage.getItem(hashKey);
     if (currentHash !== previousHash) {
       renderTable(result, true);
-      localStorage.setItem('cachedTableData', JSON.stringify(result));
-      localStorage.setItem('dataHash', currentHash);
+      localStorage.setItem(cacheKey, JSON.stringify(result));
+      localStorage.setItem(hashKey, currentHash);
     }
 
     document.getElementById('loading-indicator').style.display = 'none';
@@ -55,7 +64,7 @@ function renderTable(data, isUpdate) {
   const mergeMap = {};
   data.mergedCells.forEach(cell => {
     for (let i = 0; i < cell.numRows; i++) {
-      for (let j = 0; j < cell.numColumns; j++) {
+      for (let j = 0; i < cell.numColumns; j++) {
         const key = `${cell.row + i}-${cell.column + j}`;
         mergeMap[key] = { masterRow: cell.row, masterColumn: cell.column };
       }
