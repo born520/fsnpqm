@@ -1,64 +1,38 @@
-/* 전체 테이블 기본 스타일 */
-table {
-  border-collapse: collapse;
-  width: 100%;
-  table-layout: auto;
-  word-wrap: break-word;
-  margin: 20px 0;
-  font-family: Arial, sans-serif;
+body {
+    font-family: Arial, sans-serif;
 }
 
-th, td {
-  border: 1px solid black;
-  padding: 8px;
-  text-align: center;
-  vertical-align: middle;
-  white-space: pre-wrap;
-  font-size: 14px;
-  color: #333;
+#data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
 }
 
-/* 테이블 헤더 스타일 */
-th {
-  background-color: #f4f4f4;
-  font-weight: bold;
+#data-table td, #data-table th {
+    border: 1px solid #ddd;
+    padding: 8px;
 }
 
-/* 테이블 본문 스타일 */
-td {
-  background-color: #ffffff;
+#data-table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #4CAF50;
+    color: white;
 }
 
-/* 로딩 인디케이터 스타일 */
-#loading-indicator {
-  font-family: Arial, sans-serif;
-  font-size: 16px;
-  text-align: center;
-  margin-top: 20px;
+#data-table td {
+    text-align: center;
+    vertical-align: middle;
 }
 
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-  table {
-    overflow-x: auto;
-  }
-
-  th, td {
-    font-size: 12px;
-    padding: 6px;
-  }
+.merged-cell {
+    background-color: #f2f2f2;
 }
 
-@media (max-width: 480px) {
-  th, td {
-    font-size: 10px;
-    padding: 4px;
-  }
-}
-
-/* 셀 병합 스타일 */
-td[rowspan], td[colspan] {
-  border: 1px solid black;
-  text-align: center;
-  vertical-align: middle;
+.loading-message {
+    font-size: 1.5em;
+    color: #666;
+    text-align: center;
+    padding: 20px;
 }
