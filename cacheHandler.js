@@ -32,7 +32,7 @@ async function fetchDataAndRender() {
 }
 
 function renderTable(data) {
-    console.log("Rendering table...");  // 이 로그가 출력되는지 확인합니다.
+    console.log("Rendering table...");
 
     const table = document.getElementById('data-table');
     table.innerHTML = ''; // 테이블 초기화
@@ -75,8 +75,12 @@ function renderTable(data) {
                     if (mergeInfo.colspan > 1) td.colSpan = mergeInfo.colspan;
                 }
 
-                // 셀 스타일 적용
-                td.innerHTML = cellData || ''; // 셀에 표시할 데이터
+                // 셀 데이터 확인 후 표시
+                if (typeof cellData === 'object' && cellData !== null) {
+                    td.innerHTML = cellData.text || cellData.richText || ''; // text나 richText 속성 출력
+                } else {
+                    td.innerHTML = cellData || ''; // 기본 데이터 출력
+                }
 
                 // 각 스타일 적용
                 td.style.backgroundColor = data.backgrounds[rowIndex][colIndex] || '';
