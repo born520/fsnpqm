@@ -33,7 +33,7 @@ async function fetchDataAndRender() {
 
 function renderTable(data) {
   console.log("Rendering table...");  // 이 로그가 출력되는지 확인합니다.
-  
+
   const table = document.getElementById('data-table');
   table.innerHTML = ''; // 테이블 초기화
 
@@ -87,10 +87,10 @@ function renderTable(data) {
         td.style.fontFamily = 'Arial, sans-serif';
 
         // 폰트 스타일 (굵기, 기울임, 취소선 등)
-        if (data.fontWeights[rowIndex][colIndex]) {
-          td.style.fontWeight = data.fontWeights[rowIndex][colIndex];
+        if (data.fontWeights[rowIndex][colIndex] && data.fontWeights[rowIndex][colIndex] === 'bold') {
+          td.style.fontWeight = 'bold';
         }
-        if (data.fontStyles[rowIndex][colIndex]) {
+        if (data.fontStyles[rowIndex][colIndex] && data.fontStyles[rowIndex][colIndex] === 'italic') {
           td.style.fontStyle = 'italic';
         }
         if (data.strikethroughs[rowIndex][colIndex]) {
