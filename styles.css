@@ -5,6 +5,7 @@ table {
   table-layout: auto;
   word-wrap: break-word;
   margin: 20px 0;
+  font-family: Arial, sans-serif;
 }
 
 th, td {
@@ -13,7 +14,6 @@ th, td {
   text-align: center;
   vertical-align: middle;
   white-space: pre-wrap;
-  font-family: Arial, sans-serif;
   font-size: 14px;
   color: #333;
 }
@@ -27,19 +27,6 @@ th {
 /* 테이블 본문 스타일 */
 td {
   background-color: #ffffff;
-}
-
-/* 초기에는 테이블을 숨김 (JS에서 데이터 로딩 후 표시) */
-#data-table {
-  display: none;
-  position: relative;
-  width: 100%;
-  z-index: 1;
-}
-
-/* 중복 테이블 문제 해결 */
-#data-table + #data-table {
-  display: none;
 }
 
 /* 로딩 인디케이터 스타일 */
