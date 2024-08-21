@@ -32,45 +32,27 @@ function renderTable(data) {
   const table = document.getElementById('data-table');
   table.innerHTML = ''; // 테이블 초기화
 
+  const mergeMap = {}; // 셀 병합 정보를 저장
+
+  // 셀 병합 정보 처리
+  if (data.mergedCells) {
+    data.mergedCells.forEach(cell => {
+      for (let i = 0; i < cell.numRows; i++) {
+        for (let j = 0; j < cell.numColumns; j++) {
+          const key = `${cell.row + i}-${cell.column + j}`;
+          mergeMap[key] = {
+            masterRow: cell.row,
+            masterColumn: cell.column,
+            rowspan: cell.numRows,
+            colspan: cell.numColumns
+          };
+        }
+      }
+    });
+  }
+
   data.tableData.forEach((row, rowIndex) => {
     const tr = document.createElement('tr');
 
-    row.forEach((cellData, colIndex) => {
-      const td = document.createElement('td');
-
-      if (typeof cellData === 'object') {
-        // 원본 스타일 적용
-        td.innerHTML = cellData.richText || cellData.text || '';
-        td.style.backgroundColor = cellData.backgroundColor || '';
-        td.style.color = cellData.textColor || '';
-        td.style.textAlign = cellData.horizontalAlignment || 'center';
-        td.style.verticalAlign = cellData.verticalAlignment || 'middle';
-        td.style.fontWeight = cellData.bold ? 'bold' : 'normal';
-        td.style.fontSize = (cellData.fontSize || 14) + 'px';
-        td.style.fontFamily = cellData.fontFamily || 'Arial, sans-serif';
-        if (cellData.italic) {
-          td.style.fontStyle = 'italic';
-        }
-        if (cellData.underline) {
-          td.style.textDecoration = 'underline';
-        }
-        if (cellData.strikethrough) {
-          td.style.textDecoration = td.style.textDecoration ? `${td.style.textDecoration} line-through` : 'line-through';
-        }
-      } else {
-        td.textContent = cellData;
-      }
-
-      // 셀 너비 적용
-      if (data.columnWidths && data.columnWidths[colIndex]) {
-        td.style.width = data.columnWidths[colIndex] + 'px';
-      }
-
-      tr.appendChild(td);
-    });
-
-    table.appendChild(tr);
-  });
-}
-
-document.addEventListener('DOMContentLoaded', fetchDataAndRender);
+    if (data.rowHeights && data.rowHeights[rowIndex]) {
+      tr.style.height = data.rowHeights[rowIndex]
