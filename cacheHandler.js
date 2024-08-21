@@ -10,6 +10,7 @@ async function fetchAndCacheData() {
     const cachedData = localStorage.getItem(cacheKey);
     if (cachedData) {
       console.log("Cached data found, rendering table");
+      clearTable(); // 테이블 초기화
       renderTable(JSON.parse(cachedData), false);
       document.getElementById('loading-indicator').style.display = 'none';
       document.getElementById('data-table').style.display = '';
@@ -33,6 +34,7 @@ async function fetchAndCacheData() {
 
     if (currentHash !== previousHash) {
       console.log("Data has changed, updating cache and rendering table");
+      clearTable(); // 테이블 초기화
       renderTable(result, true);
       localStorage.setItem(cacheKey, JSON.stringify(result));
       localStorage.setItem(hashKey, currentHash);
@@ -46,6 +48,11 @@ async function fetchAndCacheData() {
   }
 }
 
+function clearTable() {
+  const table = document.getElementById('data-table');
+  table.innerHTML = ''; // 기존 테이블 내용 삭제
+}
+
 function renderTable(data, isUpdate) {
   if (data.error) {
     console.error('Error in data:', data.error);
@@ -53,10 +60,7 @@ function renderTable(data, isUpdate) {
     return;
   }
 
-  // 테이블 내용을 초기화
   const table = document.getElementById('data-table');
-  table.innerHTML = ''; // 기존 테이블 내용 삭제
-
   const fragment = document.createDocumentFragment();
   const columnWidths = data.columnWidths || [];
 
