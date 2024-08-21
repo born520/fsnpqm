@@ -1,16 +1,14 @@
-/* 기존 테이블 스타일 유지 */
+/* 전체 테이블 기본 스타일 */
 table {
   border-collapse: collapse;
   width: 100%;
   table-layout: auto;
   word-wrap: break-word;
-}
-
-table, th, td {
-  border: 1px solid black;
+  margin: 20px 0;
 }
 
 th, td {
+  border: 1px solid black;
   padding: 8px;
   text-align: center;
   vertical-align: middle;
@@ -20,11 +18,13 @@ th, td {
   color: #333;
 }
 
+/* 테이블 헤더 스타일 */
 th {
   background-color: #f4f4f4;
   font-weight: bold;
 }
 
+/* 테이블 본문 스타일 */
 td {
   background-color: #ffffff;
 }
@@ -34,7 +34,6 @@ td {
   position: relative;
   width: 100%;
   z-index: 1;
-  margin: 20px 0;
 }
 
 #data-table + #data-table {
@@ -60,9 +59,18 @@ td {
   }
 }
 
+/* 로딩 인디케이터 스타일 */
 #loading-indicator {
   font-family: Arial, sans-serif;
   font-size: 16px;
   text-align: center;
   margin-top: 20px;
 }
+
+/* 추가 스타일링 필요시 아래에 추가 */
+/* 예시로, 특정 클래스에 스타일을 추가하는 방법입니다. */
+/* .your-custom-class {
+  color: blue;
+  background-color: yellow;
+  font-weight: bold;
+} */
