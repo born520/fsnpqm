@@ -4,10 +4,11 @@ async function fetchDataAndRender() {
   // 로컬 스토리지에서 캐시된 데이터를 가져오기
   const cachedData = localStorage.getItem(cacheKey);
   if (cachedData) {
+    console.log('Using cached data:', JSON.parse(cachedData)); // 캐시된 데이터 출력
     renderTable(JSON.parse(cachedData));
     document.getElementById('loading-indicator').style.display = 'none';
     document.getElementById('data-table').style.display = 'block';
-    return; // 캐시된 데이터가 있으면 여기서 종료
+    return;
   }
 
   // 최신 데이터를 비동기적으로 가져오기
@@ -18,6 +19,7 @@ async function fetchDataAndRender() {
     }
 
     const data = await response.json();
+    console.log('Fetched data:', data); // 가져온 데이터 출력
     renderTable(data);
 
     // 데이터 캐시에 저장
