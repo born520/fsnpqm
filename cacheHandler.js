@@ -8,6 +8,7 @@ function renderTable(data) {
 
   // 셀 병합 정보 처리
   if (data.mergedCells) {
+    console.log("Processing merged cells...", data.mergedCells); // 병합 셀 디버깅
     data.mergedCells.forEach(cell => {
       for (let i = 0; i < cell.numRows; i++) {
         for (let j = 0; j < cell.numColumns; j++) {
@@ -42,10 +43,9 @@ function renderTable(data) {
           if (mergeInfo.colspan > 1) td.colSpan = mergeInfo.colspan;
         }
 
-        // 셀 스타일 적용
+        console.log(`Rendering cell [${rowIndex}, ${colIndex}]:`, cellData); // 셀 데이터 디버깅
         td.innerHTML = cellData || '';
 
-        // 각 스타일 적용
         td.style.backgroundColor = data.backgrounds[rowIndex][colIndex] || '';
         td.style.color = data.fontColors[rowIndex][colIndex] || '';
         td.style.textAlign = data.horizontalAlignments[rowIndex][colIndex] || 'center';
@@ -53,7 +53,6 @@ function renderTable(data) {
         td.style.fontSize = (data.fontSizes[rowIndex][colIndex] || 14) + 'px';
         td.style.fontFamily = 'Arial, sans-serif';
 
-        // 폰트 스타일 (굵기, 기울임, 취소선 등)
         if (data.fontWeights[rowIndex][colIndex] && data.fontWeights[rowIndex][colIndex] === 'bold') {
           td.style.fontWeight = 'bold';
         }
@@ -64,7 +63,6 @@ function renderTable(data) {
           td.style.textDecoration = 'line-through';
         }
 
-        // 셀 너비 적용
         if (data.columnWidths && data.columnWidths[colIndex]) {
           td.style.width = data.columnWidths[colIndex] + 'px';
         }
@@ -75,4 +73,6 @@ function renderTable(data) {
 
     table.appendChild(tr);
   });
+
+  console.log("Table rendering completed.");
 }
