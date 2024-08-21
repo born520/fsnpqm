@@ -1,141 +1,133 @@
-async function fetchDataAndRender() {
-    const cacheKey = 'cachedTableData';
+const CACHE_EXPIRATION_MS = 60 * 60 * 1000; // 1시간
+const CACHE_KEY = 'cachedTableData';
+const API_ENDPOINT = 'YOUR_API_ENDPOINT';
 
-    // 로컬 스토리지에서 캐시된 데이터를 가져오기
-    const cachedData = localStorage.getItem(cacheKey);
-    if (cachedData) {
-        console.log('Using cached data:', JSON.parse(cachedData)); // 캐시된 데이터 출력
-        renderTable(JSON.parse(cachedData));
-        document.getElementById('loading-indicator').style.display = 'none';
-        document.getElementById('data-table').style.display = 'block';
-        return;
-    }
-
-    // 최신 데이터를 비동기적으로 가져오기
-    try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbxlWGaTrXFykS1al6avOG4L3rq2SxCg5TEXEspr3x99x5a6HcNZkGMgbiPDB-lWFn1ptQ/exec');
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Fetched data:', data); // 가져온 데이터 출력
-        renderTable(data);
-
-        // 데이터 캐시에 저장
-        localStorage.setItem(cacheKey, JSON.stringify(data));
-        document.getElementById('loading-indicator').style.display = 'none';
-        document.getElementById('data-table').style.display = 'block';
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
+// 캐시 관련 함수
+function isCacheValid(timestamp) {
+    return (Date.now() - timestamp) < CACHE_EXPIRATION_MS;
 }
 
+function getCachedData(key) {
+    const cached = localStorage.getItem(key);
+    if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (isCacheValid(timestamp)) {
+            return data;
+        }
+    }
+    return null;
+}
+
+function setCachedData(key, data) {
+    localStorage.setItem(key, JSON.stringify({
+        data,
+        timestamp: Date.now(),
+    }));
+}
+
+// 로딩 인디케이터 관리
+function showLoadingIndicator() {
+    document.getElementById('loading-indicator').style.display = 'block';
+}
+
+function hideLoadingIndicator() {
+    document.getElementById('loading-indicator').style.display = 'none';
+}
+
+// 데이터 로딩 및 렌더링
+async function fetchDataAndRender() {
+    showLoadingIndicator();
+
+    let data = getCachedData(CACHE_KEY);
+
+    if (data) {
+        console.log('Using cached data:', data);
+    } else {
+        try {
+            const response = await fetch(API_ENDPOINT);
+            if (!response.ok) throw new Error(`Network response was not ok: ${response.status}`);
+            data = await response.json();
+            setCachedData(CACHE_KEY, data);
+            console.log('Fetched data:', data);
+        } catch (error) {
+            console.error('Failed to fetch data:', error);
+            hideLoadingIndicator();
+            return;
+        }
+    }
+
+    renderTable(data);
+    hideLoadingIndicator();
+}
+
+// 테이블 렌더링
 function renderTable(data) {
-    console.log("Rendering table...");
+    console.log('Rendering table...');
 
     const table = document.getElementById('data-table');
-    table.innerHTML = ''; // 테이블 초기화
+    table.innerHTML = '';
+    table.style.display = 'table';
 
-    const mergeMap = {}; // 셀 병합 정보를 저장
+    const { tableData, backgrounds, fontColors, horizontalAlignments, verticalAlignments, fontSizes, fontFamilies, fontWeights, fontStyles, strikethroughs, mergedCells, rowHeights, columnWidths } = data;
 
-    // 셀 병합 정보 처리
-    if (data.mergedCells) {
-        data.mergedCells.forEach(cell => {
-            for (let i = 0; i < cell.numRows; i++) {
-                for (let j = 0; j < cell.numColumns; j++) {
-                    const key = `${cell.row + i}-${cell.column + j}`;
-                    mergeMap[key] = {
-                        masterRow: cell.row,
-                        masterColumn: cell.column,
-                        rowspan: cell.numRows,
-                        colspan: cell.numColumns
-                    };
-                }
-            }
+    const mergeMap = {};
+
+    // 병합 셀 처리
+    if (mergedCells) {
+        mergedCells.forEach(cell => {
+            const { row, column, numRows, numColumns } = cell;
+            mergeMap[`${row}-${column}`] = { rowspan: numRows, colspan: numColumns };
         });
     }
 
-    data.tableData.forEach((row, rowIndex) => {
+    tableData.forEach((row, rowIndex) => {
         const tr = document.createElement('tr');
 
-        if (data.rowHeights && data.rowHeights[rowIndex]) {
-            tr.style.height = data.rowHeights[rowIndex] + 'px';
+        if (rowHeights?.[rowIndex]) {
+            tr.style.height = `${rowHeights[rowIndex]}px`;
         }
 
         row.forEach((cellData, colIndex) => {
-            const cellKey = `${rowIndex}-${colIndex}`;
-            const mergeInfo = mergeMap[cellKey];
+            const td = document.createElement('td');
+            td.classList.add('table-cell');
 
-            if (!mergeInfo || (mergeInfo.masterRow === rowIndex && mergeInfo.masterColumn === colIndex)) {
-                const td = document.createElement('td');
-
-                if (mergeInfo) {
-                    if (mergeInfo.rowspan > 1) td.rowSpan = mergeInfo.rowspan;
-                    if (mergeInfo.colspan > 1) td.colSpan = mergeInfo.colspan;
-                }
-
-                // 셀 데이터 확인 후 표시
-                if (typeof cellData === 'object' && cellData !== null) {
-                    td.innerHTML = cellData.text || cellData.richText || ''; // text나 richText 속성 출력
-                } else {
-                    td.innerHTML = cellData || ''; // 기본 데이터 출력
-                }
-
-                // 각 스타일 적용
-                td.style.backgroundColor = data.backgrounds[rowIndex][colIndex] || '';
-                td.style.color = data.fontColors[rowIndex][colIndex] || '#000'; // 기본 색상을 검정색으로 설정
-                td.style.textAlign = data.horizontalAlignments[rowIndex][colIndex] || 'center';
-                td.style.verticalAlign = data.verticalAlignments[rowIndex][colIndex] || 'middle';
-                td.style.fontSize = (data.fontSizes[rowIndex][colIndex] || 14) + 'px';
-                td.style.fontFamily = 'Arial, sans-serif';
-
-                // 폰트 스타일 (굵기, 기울임, 취소선 등)
-                if (data.fontWeights[rowIndex][colIndex] && data.fontWeights[rowIndex][colIndex] === 'bold') {
-                    td.style.fontWeight = 'bold';
-                }
-                if (data.fontStyles[rowIndex][colIndex] && data.fontStyles[rowIndex][colIndex] === 'italic') {
-                    td.style.fontStyle = 'italic';
-                }
-                if (data.strikethroughs[rowIndex][colIndex]) {
-                    td.style.textDecoration = 'line-through';
-                }
-
-                // 셀 너비 적용
-                if (data.columnWidths && data.columnWidths[colIndex]) {
-                    td.style.width = data.columnWidths[colIndex] + 'px';
-                }
-
-                tr.appendChild(td);
+            // 병합 셀 적용
+            const mergeKey = `${rowIndex}-${colIndex}`;
+            if (mergeMap[mergeKey]) {
+                const { rowspan, colspan } = mergeMap[mergeKey];
+                if (rowspan > 1) td.rowSpan = rowspan;
+                if (colspan > 1) td.colSpan = colspan;
+            } else if (Object.values(mergeMap).some(merge => 
+                rowIndex > merge.row && rowIndex < merge.row + merge.rowspan &&
+                colIndex > merge.column && colIndex < merge.column + merge.colspan
+            )) {
+                // 병합된 셀 내부의 중복 셀은 스킵
+                return;
             }
+
+            // 셀 내용 설정
+            td.innerHTML = (typeof cellData === 'object' && cellData !== null) ? (cellData.text || cellData.richText || '') : (cellData || '');
+
+            // 스타일 적용
+            td.style.backgroundColor = backgrounds?.[rowIndex]?.[colIndex] || '#ffffff';
+            td.style.color = fontColors?.[rowIndex]?.[colIndex] || '#000000';
+            td.style.textAlign = horizontalAlignments?.[rowIndex]?.[colIndex] || 'left';
+            td.style.verticalAlign = verticalAlignments?.[rowIndex]?.[colIndex] || 'top';
+            td.style.fontSize = `${fontSizes?.[rowIndex]?.[colIndex] || 14}px`;
+            td.style.fontFamily = fontFamilies?.[rowIndex]?.[colIndex] || 'Arial, sans-serif';
+            if (fontWeights?.[rowIndex]?.[colIndex] === 'bold') td.style.fontWeight = 'bold';
+            if (fontStyles?.[rowIndex]?.[colIndex] === 'italic') td.style.fontStyle = 'italic';
+            if (strikethroughs?.[rowIndex]?.[colIndex]) td.style.textDecoration = 'line-through';
+            if (columnWidths?.[colIndex]) td.style.width = `${columnWidths[colIndex]}px`;
+
+            tr.appendChild(td);
         });
 
         table.appendChild(tr);
     });
 
-    applyAdditionalStyles(); // 테이블 렌더링 후 추가 스타일 적용
-    console.log("Table rendering completed.");
+    console.log('Table rendering completed.');
 }
 
-function applyAdditionalStyles() {
-    const table = document.getElementById('data-table');
-    
-    // 첫 번째 열을 굵게 표시하고, 배경색을 밝은 회색으로 설정
-    const firstColumnCells = table.querySelectorAll('td:first-child');
-    firstColumnCells.forEach(cell => {
-        cell.style.fontWeight = 'bold';
-        cell.style.backgroundColor = '#f7f7f7'; // 밝은 회색
-        cell.style.color = '#000'; // 텍스트 색상 검정색
-    });
-
-    // 병합된 셀의 스타일을 더 눈에 띄게 설정
-    const mergedCells = table.querySelectorAll('td[rowspan], td[colspan]');
-    mergedCells.forEach(cell => {
-        cell.style.backgroundColor = '#e0e0e0'; // 병합된 셀의 배경을 조금 더 어둡게
-        cell.style.color = '#000'; // 텍스트 색상 검정색
-        cell.style.border = '1px solid #ccc'; // 경계선 추가
-    });
-}
-
-// DOMContentLoaded 이벤트 리스너 설정
+// 초기화
 document.addEventListener('DOMContentLoaded', fetchDataAndRender);
