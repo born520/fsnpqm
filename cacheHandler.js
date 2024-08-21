@@ -1,36 +1,3 @@
-async function fetchDataAndRender() {
-  const cacheKey = 'cachedTableData';
-
-  // 로컬 스토리지에서 캐시된 데이터를 가져오기
-  const cachedData = localStorage.getItem(cacheKey);
-  if (cachedData) {
-    console.log('Using cached data:', JSON.parse(cachedData)); // 캐시된 데이터 출력
-    renderTable(JSON.parse(cachedData));
-    document.getElementById('loading-indicator').style.display = 'none';
-    document.getElementById('data-table').style.display = 'block'; // 테이블 표시
-    return;
-  }
-
-  // 최신 데이터를 비동기적으로 가져오기
-  try {
-    const response = await fetch('https://script.google.com/macros/s/AKfycbxlWGaTrXFykS1al6avOG4L3rq2SxCg5TEXEspr3x99x5a6HcNZkGMgbiPDB-lWFn1ptQ/exec');
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log('Fetched data:', data); // 가져온 데이터 출력
-    renderTable(data);
-
-    // 데이터 캐시에 저장
-    localStorage.setItem(cacheKey, JSON.stringify(data));
-    document.getElementById('loading-indicator').style.display = 'none';
-    document.getElementById('data-table').style.display = 'block'; // 테이블 표시
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-}
-
 function renderTable(data) {
   console.log("Rendering table...");
 
@@ -76,24 +43,30 @@ function renderTable(data) {
           if (mergeInfo.colspan > 1) td.colSpan = mergeInfo.colspan;
         }
 
-        console.log(`Rendering cell [${rowIndex}, ${colIndex}]:`, cellData); // 셀 데이터 디버깅
-        td.innerHTML = cellData || '';
+        console.log(`Rendering cell [${rowIndex}, ${colIndex}]:`, cellData); 
 
-        td.style.backgroundColor = data.backgrounds[rowIndex][colIndex] || '';
-        td.style.color = data.fontColors[rowIndex][colIndex] || '';
-        td.style.textAlign = data.horizontalAlignments[rowIndex][colIndex] || 'center';
-        td.style.verticalAlign = data.verticalAlignments[rowIndex][colIndex] || 'middle';
-        td.style.fontSize = (data.fontSizes[rowIndex][colIndex] || 14) + 'px';
-        td.style.fontFamily = 'Arial, sans-serif';
+        // 보호적 코딩: cellData가 객체가 아니거나, null/undefined일 경우 처리
+        if (typeof cellData === 'object' && cellData !== null) {
+          td.innerHTML = cellData.richText || cellData.text || '';
 
-        if (data.fontWeights[rowIndex][colIndex] && data.fontWeights[rowIndex][colIndex] === 'bold') {
-          td.style.fontWeight = 'bold';
-        }
-        if (data.fontStyles[rowIndex][colIndex] && data.fontStyles[rowIndex][colIndex] === 'italic') {
-          td.style.fontStyle = 'italic';
-        }
-        if (data.strikethroughs[rowIndex][colIndex]) {
-          td.style.textDecoration = 'line-through';
+          td.style.backgroundColor = data.backgrounds[rowIndex][colIndex] || '';
+          td.style.color = data.fontColors[rowIndex][colIndex] || '';
+          td.style.textAlign = data.horizontalAlignments[rowIndex][colIndex] || 'center';
+          td.style.verticalAlign = data.verticalAlignments[rowIndex][colIndex] || 'middle';
+          td.style.fontSize = (data.fontSizes[rowIndex][colIndex] || 14) + 'px';
+          td.style.fontFamily = 'Arial, sans-serif';
+
+          if (data.fontWeights[rowIndex][colIndex] && data.fontWeights[rowIndex][colIndex] === 'bold') {
+            td.style.fontWeight = 'bold';
+          }
+          if (data.fontStyles[rowIndex][colIndex] && data.fontStyles[rowIndex][colIndex] === 'italic') {
+            td.style.fontStyle = 'italic';
+          }
+          if (data.strikethroughs[rowIndex][colIndex]) {
+            td.style.textDecoration = 'line-through';
+          }
+        } else {
+          td.innerHTML = '';
         }
 
         if (data.columnWidths && data.columnWidths[colIndex]) {
@@ -109,6 +82,3 @@ function renderTable(data) {
 
   console.log("Table rendering completed.");
 }
-
-// DOMContentLoaded 이벤트 리스너 설정
-document.addEventListener('DOMContentLoaded', fetchDataAndRender);
