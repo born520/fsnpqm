@@ -2,14 +2,17 @@ async function fetchData() {
   try {
     // 현재 페이지의 경로를 고유 식별자로 사용
     const pageIdentifier = window.location.pathname;
+    console.log(`Fetching data for page: ${pageIdentifier}`);
 
     // 페이지별 캐시된 데이터를 가져오기
     const cachedData = localStorage.getItem(`cachedTableData_${pageIdentifier}`);
     
     if (cachedData) {
+      console.log('Using cached data');
       renderTable(JSON.parse(cachedData), false);
       document.getElementById('loading-indicator').style.display = 'none';
       document.getElementById('data-table').style.display = '';
+      return; // 여기서 캐시된 데이터를 렌더링한 후 함수 종료
     }
 
     // Google Sheets 데이터를 비동기적으로 가져오기
@@ -19,6 +22,9 @@ async function fetchData() {
     }
 
     const result = await response.json();
+    console.log('Fetched data:', result);
+
+    // 데이터 변경 여부 확인 후 업데이트
     const currentHash = hashData(result.tableData);
     const previousHash = localStorage.getItem(`dataHash_${pageIdentifier}`);
     
