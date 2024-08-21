@@ -7,7 +7,6 @@ async function fetchDataAndRender() {
     renderTable(JSON.parse(cachedData));
     document.getElementById('loading-indicator').style.display = 'none';
     document.getElementById('data-table').style.display = 'block';
-    return; // 캐시된 데이터가 있으면 여기서 종료
   }
 
   // 최신 데이터를 비동기적으로 가져오기
@@ -106,5 +105,4 @@ function renderTable(data) {
   });
 }
 
-// DOMContentLoaded 이벤트 리스너 설정
 document.addEventListener('DOMContentLoaded', fetchDataAndRender);
