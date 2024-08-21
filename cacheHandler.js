@@ -84,7 +84,7 @@ function renderTable(data) {
 
                 // 각 스타일 적용
                 td.style.backgroundColor = data.backgrounds[rowIndex][colIndex] || '';
-                td.style.color = data.fontColors[rowIndex][colIndex] || '';
+                td.style.color = data.fontColors[rowIndex][colIndex] || '#000'; // 기본 색상을 검정색으로 설정
                 td.style.textAlign = data.horizontalAlignments[rowIndex][colIndex] || 'center';
                 td.style.verticalAlign = data.verticalAlignments[rowIndex][colIndex] || 'middle';
                 td.style.fontSize = (data.fontSizes[rowIndex][colIndex] || 14) + 'px';
@@ -120,17 +120,20 @@ function renderTable(data) {
 function applyAdditionalStyles() {
     const table = document.getElementById('data-table');
     
-    // 예: 첫 번째 열을 굵게 표시
+    // 첫 번째 열을 굵게 표시하고, 배경색을 회색으로 설정
     const firstColumnCells = table.querySelectorAll('td:first-child');
     firstColumnCells.forEach(cell => {
         cell.style.fontWeight = 'bold';
-        cell.style.backgroundColor = '#e0e0e0';
+        cell.style.backgroundColor = '#f0f0f0'; // 밝은 회색
+        cell.style.color = '#000'; // 텍스트 색상 검정색
     });
 
-    // 예: 셀 병합된 경우 배경색 변경
+    // 병합된 셀의 스타일을 더 눈에 띄게 설정
     const mergedCells = table.querySelectorAll('td[rowspan], td[colspan]');
     mergedCells.forEach(cell => {
-        cell.classList.add('merged-cell');
+        cell.style.backgroundColor = '#f7f7f7'; // 병합된 셀의 배경을 더 밝게
+        cell.style.color = '#000'; // 텍스트 색상 검정색
+        cell.style.border = '1px solid #ccc'; // 경계선 추가
     });
 }
 
