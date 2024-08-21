@@ -1,30 +1,30 @@
 async function fetchAndCacheData() {
   try {
-    console.log("Fetching data started");
+    console.log("Starting data fetch process");
 
     const pagePath = window.location.pathname;
     const cacheKey = `cachedTableData_${pagePath}`;
     const hashKey = `dataHash_${pagePath}`;
 
-    console.log("Checking cache");
+    console.log("Checking for cached data");
     const cachedData = localStorage.getItem(cacheKey);
     if (cachedData) {
-      console.log("Using cached data");
+      console.log("Cached data found, rendering table");
       renderTable(JSON.parse(cachedData), false);
       document.getElementById('loading-indicator').style.display = 'none';
       document.getElementById('data-table').style.display = '';
       return;
     }
 
-    console.log("Fetching new data");
+    console.log("No cached data found, fetching new data");
     const response = await fetch('https://script.google.com/macros/s/AKfycbxlWGaTrXFykS1al6avOG4L3rq2SxCg5TEXEspr3x99x5a6HcNZkGMgbiPDB-lWFn1ptQ/exec');
 
     if (!response.ok) {
-      console.error(`Fetch failed with status: ${response.status}`);
+      console.error(`Failed to fetch data, status: ${response.status}`);
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    console.log("Parsing response data");
+    console.log("Data fetch successful, parsing data");
     const result = await response.json();
     console.log("Data parsed successfully:", result);
 
@@ -32,7 +32,7 @@ async function fetchAndCacheData() {
     const previousHash = localStorage.getItem(hashKey);
 
     if (currentHash !== previousHash) {
-      console.log("Data has changed, updating cache");
+      console.log("Data has changed, updating cache and rendering table");
       renderTable(result, true);
       localStorage.setItem(cacheKey, JSON.stringify(result));
       localStorage.setItem(hashKey, currentHash);
@@ -41,7 +41,7 @@ async function fetchAndCacheData() {
     document.getElementById('loading-indicator').style.display = 'none';
     document.getElementById('data-table').style.display = '';
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error('Error during data fetch process:', error);
     document.getElementById('data-table').innerHTML = "<tr><td>Error fetching data. Please try again later.</td></tr>";
   }
 }
