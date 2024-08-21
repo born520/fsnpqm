@@ -29,15 +29,25 @@ td {
   background-color: #ffffff;
 }
 
-/* 중복 테이블 문제 해결 */
+/* 초기에는 테이블을 숨김 (JS에서 데이터 로딩 후 표시) */
 #data-table {
+  display: none;
   position: relative;
   width: 100%;
   z-index: 1;
 }
 
+/* 중복 테이블 문제 해결 */
 #data-table + #data-table {
   display: none;
+}
+
+/* 로딩 인디케이터 스타일 */
+#loading-indicator {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  text-align: center;
+  margin-top: 20px;
 }
 
 /* 반응형 디자인 */
@@ -58,19 +68,3 @@ td {
     padding: 4px;
   }
 }
-
-/* 로딩 인디케이터 스타일 */
-#loading-indicator {
-  font-family: Arial, sans-serif;
-  font-size: 16px;
-  text-align: center;
-  margin-top: 20px;
-}
-
-/* 추가 스타일링 필요시 아래에 추가 */
-/* 예시로, 특정 클래스에 스타일을 추가하는 방법입니다. */
-/* .your-custom-class {
-  color: blue;
-  background-color: yellow;
-  font-weight: bold;
-} */
