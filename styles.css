@@ -1,38 +1,27 @@
-body {
-    font-family: Arial, sans-serif;
+#loading-indicator {
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
 }
 
 #data-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin: 20px 0;
 }
 
-#data-table td, #data-table th {
+.table-cell {
+    padding: 10px;
     border: 1px solid #ddd;
-    padding: 8px;
+    text-align: left;
+    vertical-align: top;
 }
 
-#data-table th {
-    padding-top: 12px;
-    padding-bottom: 12px;
-    text-align: center;
-    background-color: #4CAF50;
-    color: white;
-}
-
-#data-table td {
-    text-align: center;
-    vertical-align: middle;
-}
-
-.merged-cell {
+.table-cell-header {
     background-color: #f2f2f2;
+    font-weight: bold;
 }
 
-.loading-message {
-    font-size: 1.5em;
-    color: #666;
-    text-align: center;
-    padding: 20px;
+.table-cell-merged {
+    background-color: #e0e0e0;
 }
