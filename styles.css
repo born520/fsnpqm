@@ -108,3 +108,15 @@ td[rowspan], td[colspan] {
   text-align: center;
   margin-top: 20px;
 }
+#data-table {
+  position: absolute; /* 테이블을 겹치도록 설정 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1; /* 위쪽에 표시되도록 설정 */
+}
+
+#data-table:first-of-type {
+  z-index: 0; /* 첫 번째 테이블이 아래쪽에 표시되도록 설정 */
+}
+
