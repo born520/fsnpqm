@@ -56,16 +56,32 @@ function renderTable(data) {
 
     row.forEach((cellData, colIndex) => {
       const td = document.createElement('td');
-      
+
       // 셀 스타일 적용
       if (typeof cellData === 'object') {
         td.innerHTML = cellData.richText || cellData.text || '';
+
+        // 배경색, 글자색, 텍스트 정렬, 글꼴 크기 등 스타일 적용
         td.style.backgroundColor = cellData.backgroundColor || '';
         td.style.color = cellData.textColor || '';
         td.style.textAlign = cellData.horizontalAlignment || 'center';
         td.style.verticalAlign = cellData.verticalAlignment || 'middle';
         td.style.fontWeight = cellData.bold ? 'bold' : 'normal';
         td.style.fontSize = (cellData.fontSize || 14) + 'px';
+        td.style.fontFamily = cellData.fontFamily || 'Arial, sans-serif';
+
+        // 추가 스타일 적용
+        if (cellData.italic) {
+          td.style.fontStyle = 'italic';
+        }
+
+        if (cellData.underline) {
+          td.style.textDecoration = 'underline';
+        }
+
+        if (cellData.strikethrough) {
+          td.style.textDecoration = td.style.textDecoration ? `${td.style.textDecoration} line-through` : 'line-through';
+        }
       } else {
         td.textContent = cellData;
       }
