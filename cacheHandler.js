@@ -1,6 +1,7 @@
 async function fetchAndCacheData() {
   try {
     console.log("Fetching data started");
+
     const pagePath = window.location.pathname;
     const cacheKey = `cachedTableData_${pagePath}`;
     const hashKey = `dataHash_${pagePath}`;
@@ -16,25 +17,16 @@ async function fetchAndCacheData() {
     }
 
     console.log("Fetching new data");
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => {
-      console.log("Fetch request timed out");
-      controller.abort();
-    }, 10000); // 10초 타임아웃 설정
-
-    const response = await fetch('https://script.google.com/macros/s/AKfycbxlWGaTrXFykS1al6avOG4L3rq2SxCg5TEXEspr3x99x5a6HcNZkGMgbiPDB-lWFn1ptQ/exec', {
-      signal: controller.signal
-    });
-
-    clearTimeout(timeoutId); // 정상적으로 응답을 받으면 타임아웃 취소
-    console.log("Data fetched, status:", response.status);
+    const response = await fetch('https://script.google.com/macros/s/AKfycbxlWGaTrXFykS1al6avOG4L3rq2SxCg5TEXEspr3x99x5a6HcNZkGMgbiPDB-lWFn1ptQ/exec');
 
     if (!response.ok) {
+      console.error(`Fetch failed with status: ${response.status}`);
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
+    console.log("Parsing response data");
     const result = await response.json();
-    console.log("Data parsed successfully");
+    console.log("Data parsed successfully:", result);
 
     const currentHash = hashData(result.tableData);
     const previousHash = localStorage.getItem(hashKey);
@@ -50,11 +42,7 @@ async function fetchAndCacheData() {
     document.getElementById('data-table').style.display = '';
   } catch (error) {
     console.error('Error fetching data:', error);
-    if (error.name === 'AbortError') {
-      document.getElementById('data-table').innerHTML = "<tr><td>Request timed out. Please try again later.</td></tr>";
-    } else {
-      document.getElementById('data-table').innerHTML = "<tr><td>Error fetching data. Please try again later.</td></tr>";
-    }
+    document.getElementById('data-table').innerHTML = "<tr><td>Error fetching data. Please try again later.</td></tr>";
   }
 }
 
