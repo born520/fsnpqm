@@ -8,7 +8,7 @@ async function fetchAndCacheData() {
       clearTable();
       renderTable(JSON.parse(cachedData));
       document.getElementById('loading-indicator').style.display = 'none';
-      document.getElementById('data-table').style.display = '';
+      document.getElementById('data-table').style.display = ''; // 테이블 표시
       return;
     }
 
@@ -24,10 +24,11 @@ async function fetchAndCacheData() {
     localStorage.setItem(cacheKey, JSON.stringify(result));
 
     document.getElementById('loading-indicator').style.display = 'none';
-    document.getElementById('data-table').style.display = '';
+    document.getElementById('data-table').style.display = ''; // 테이블 표시
   } catch (error) {
     console.error('Error fetching data:', error);
     document.getElementById('data-table').innerHTML = "<tr><td>Error fetching data. Please try again later.</td></tr>";
+    document.getElementById('data-table').style.display = ''; // 테이블 표시 (에러 상태)
   }
 }
 
