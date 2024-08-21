@@ -5,7 +5,7 @@ async function fetchAndCacheData() {
 
     const cachedData = localStorage.getItem(cacheKey);
     if (cachedData) {
-      clearTable(); // 기존 내용 초기화
+      clearTable();
       renderTable(JSON.parse(cachedData));
       document.getElementById('loading-indicator').style.display = 'none';
       document.getElementById('data-table').style.display = '';
@@ -19,7 +19,7 @@ async function fetchAndCacheData() {
     }
 
     const result = await response.json();
-    clearTable(); // 기존 내용 초기화
+    clearTable();
     renderTable(result);
     localStorage.setItem(cacheKey, JSON.stringify(result));
 
