@@ -1,17 +1,21 @@
 async function fetchAndCacheData() {
   try {
+    console.log("Starting data fetch process...");
+
     const pagePath = window.location.pathname;
     const cacheKey = `cachedTableData_${pagePath}`;
 
     const cachedData = localStorage.getItem(cacheKey);
     if (cachedData) {
+      console.log("Cached data found. Rendering table...");
       clearTable();
       renderTable(JSON.parse(cachedData));
       document.getElementById('loading-indicator').style.display = 'none';
-      document.getElementById('data-table').style.display = ''; // 테이블 표시
+      document.getElementById('data-table').style.display = 'block'; // 테이블 표시
       return;
     }
 
+    console.log("Fetching new data...");
     const response = await fetch('https://script.google.com/macros/s/AKfycbxlWGaTrXFykS1al6avOG4L3rq2SxCg5TEXEspr3x99x5a6HcNZkGMgbiPDB-lWFn1ptQ/exec');
     
     if (!response.ok) {
@@ -19,16 +23,17 @@ async function fetchAndCacheData() {
     }
 
     const result = await response.json();
+    console.log("Data fetched successfully. Rendering table...");
     clearTable();
     renderTable(result);
     localStorage.setItem(cacheKey, JSON.stringify(result));
 
     document.getElementById('loading-indicator').style.display = 'none';
-    document.getElementById('data-table').style.display = ''; // 테이블 표시
+    document.getElementById('data-table').style.display = 'block'; // 테이블 표시
   } catch (error) {
     console.error('Error fetching data:', error);
     document.getElementById('data-table').innerHTML = "<tr><td>Error fetching data. Please try again later.</td></tr>";
-    document.getElementById('data-table').style.display = ''; // 테이블 표시 (에러 상태)
+    document.getElementById('data-table').style.display = 'block'; // 테이블 표시 (에러 상태)
   }
 }
 
@@ -38,6 +43,7 @@ function clearTable() {
 }
 
 function renderTable(data) {
+  console.log("Rendering table...");
   const table = document.getElementById('data-table');
   const fragment = document.createDocumentFragment();
 
@@ -52,6 +58,7 @@ function renderTable(data) {
   });
 
   table.appendChild(fragment);
+  console.log("Table rendered.");
 }
 
 document.addEventListener('DOMContentLoaded', fetchAndCacheData);
