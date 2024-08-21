@@ -1,4 +1,39 @@
+async function fetchDataAndRender() {
+  const cacheKey = 'cachedTableData';
+
+  // 로컬 스토리지에서 캐시된 데이터를 가져오기
+  const cachedData = localStorage.getItem(cacheKey);
+  if (cachedData) {
+    console.log('Using cached data:', JSON.parse(cachedData)); // 캐시된 데이터 출력
+    renderTable(JSON.parse(cachedData));
+    document.getElementById('loading-indicator').style.display = 'none';
+    document.getElementById('data-table').style.display = 'block';
+    return;
+  }
+
+  // 최신 데이터를 비동기적으로 가져오기
+  try {
+    const response = await fetch('https://script.google.com/macros/s/AKfycbxlWGaTrXFykS1al6avOG4L3rq2SxCg5TEXEspr3x99x5a6HcNZkGMgbiPDB-lWFn1ptQ/exec');
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Fetched data:', data); // 가져온 데이터 출력
+    renderTable(data);
+
+    // 데이터 캐시에 저장
+    localStorage.setItem(cacheKey, JSON.stringify(data));
+    document.getElementById('loading-indicator').style.display = 'none';
+    document.getElementById('data-table').style.display = 'block';
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+}
+
 function renderTable(data) {
+  console.log("Rendering table...");  // 이 로그가 출력되는지 확인합니다.
+  
   const table = document.getElementById('data-table');
   table.innerHTML = ''; // 테이블 초기화
 
@@ -74,3 +109,6 @@ function renderTable(data) {
     table.appendChild(tr);
   });
 }
+
+// DOMContentLoaded 이벤트 리스너 설정
+document.addEventListener('DOMContentLoaded', fetchDataAndRender);
