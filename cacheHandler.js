@@ -5,6 +5,7 @@ async function fetchAndCacheData() {
 
     const cachedData = localStorage.getItem(cacheKey);
     if (cachedData) {
+      clearTable(); // 기존 내용 초기화
       renderTable(JSON.parse(cachedData));
       document.getElementById('loading-indicator').style.display = 'none';
       document.getElementById('data-table').style.display = '';
@@ -18,6 +19,7 @@ async function fetchAndCacheData() {
     }
 
     const result = await response.json();
+    clearTable(); // 기존 내용 초기화
     renderTable(result);
     localStorage.setItem(cacheKey, JSON.stringify(result));
 
@@ -27,6 +29,11 @@ async function fetchAndCacheData() {
     console.error('Error fetching data:', error);
     document.getElementById('data-table').innerHTML = "<tr><td>Error fetching data. Please try again later.</td></tr>";
   }
+}
+
+function clearTable() {
+  const table = document.getElementById('data-table');
+  table.innerHTML = ''; // 기존 테이블 내용만 삭제, 스타일 유지
 }
 
 function renderTable(data) {
