@@ -1,36 +1,3 @@
-async function fetchDataAndRender() {
-    const cacheKey = 'cachedTableData';
-
-    // 로컬 스토리지에서 캐시된 데이터를 가져오기
-    const cachedData = localStorage.getItem(cacheKey);
-    if (cachedData) {
-        console.log('Using cached data:', JSON.parse(cachedData)); // 캐시된 데이터 출력
-        renderTable(JSON.parse(cachedData));
-        document.getElementById('loading-indicator').style.display = 'none';
-        document.getElementById('data-table').style.display = 'block';
-        return;
-    }
-
-    // 최신 데이터를 비동기적으로 가져오기
-    try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbxlWGaTrXFykS1al6avOG4L3rq2SxCg5TEXEspr3x99x5a6HcNZkGMgbiPDB-lWFn1ptQ/exec');
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Fetched data:', data); // 가져온 데이터 출력
-        renderTable(data);
-
-        // 데이터 캐시에 저장
-        localStorage.setItem(cacheKey, JSON.stringify(data));
-        document.getElementById('loading-indicator').style.display = 'none';
-        document.getElementById('data-table').style.display = 'block';
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
-}
-
 function renderTable(data) {
     console.log("Rendering table...");
 
@@ -120,18 +87,18 @@ function renderTable(data) {
 function applyAdditionalStyles() {
     const table = document.getElementById('data-table');
     
-    // 첫 번째 열을 굵게 표시하고, 배경색을 회색으로 설정
+    // 첫 번째 열을 굵게 표시하고, 배경색을 밝은 회색으로 설정
     const firstColumnCells = table.querySelectorAll('td:first-child');
     firstColumnCells.forEach(cell => {
         cell.style.fontWeight = 'bold';
-        cell.style.backgroundColor = '#f0f0f0'; // 밝은 회색
+        cell.style.backgroundColor = '#f7f7f7'; // 밝은 회색
         cell.style.color = '#000'; // 텍스트 색상 검정색
     });
 
     // 병합된 셀의 스타일을 더 눈에 띄게 설정
     const mergedCells = table.querySelectorAll('td[rowspan], td[colspan]');
     mergedCells.forEach(cell => {
-        cell.style.backgroundColor = '#f7f7f7'; // 병합된 셀의 배경을 더 밝게
+        cell.style.backgroundColor = '#e0e0e0'; // 병합된 셀의 배경을 조금 더 어둡게
         cell.style.color = '#000'; // 텍스트 색상 검정색
         cell.style.border = '1px solid #ccc'; // 경계선 추가
     });
