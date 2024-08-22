@@ -1,65 +1,35 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const tableDataEndpoint = "https://script.google.com/macros/s/AKfycbxlWGaTrXFykS1al6avOG4L3rq2SxCg5TEXEspr3x99x5a6HcNZkGMgbiPDB-lWFn1ptQ/exec";
+document.addEventListener('DOMContentLoaded', function() {
+    const tableElement = document.getElementById('data-table');
 
-    fetch(tableDataEndpoint)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error("Network response was not ok: " + response.statusText);
-            }
-            return response.json();
-        })
-        .then(data => {
-            renderTable(data);
-        })
-        .catch(error => {
-            console.error("Failed to fetch data:", error);
-            renderCachedData();
-        });
-    
-    function renderCachedData() {
-        const cachedData = {
-            tableData: [
-                // 캐시된 데이터 추가
-            ],
-            backgrounds: [],
-            fontColors: [],
-            horizontalAlignments: [],
-            verticalAlignments: [],
-            mergedCells: [
-                { row: 0, col: 0, rowSpan: 2, colSpan: 2 },
-                // 병합 셀에 대한 정보 추가
-            ],
-        };
-        renderTable(cachedData);
+    fetchDataAndRender();
+
+    function fetchDataAndRender() {
+        fetch('https://script.google.com/macros/s/AKfycbxlWGaTrXFykS1al6avOG4L3rq2SxCg5TEXEspr3x99x5a6HcNZkGMgbiPDB-lWFn1ptQ/exec')
+            .then(response => response.json())
+            .then(data => {
+                renderTable(data);
+            })
+            .catch(error => {
+                console.error('Failed to fetch data:', error);
+            });
     }
 
     function renderTable(data) {
-        const table = document.getElementById("data-table");
-        table.style.display = "table"; // 테이블 표시
-        const tbody = document.createElement("tbody");
+        tableElement.style.display = 'table';
+        let tableHTML = '';
+        
+        data.tableData.forEach((row, rowIndex) => {
+            tableHTML += '<tr>';
+            row.forEach((cell, colIndex) => {
+                let rowspan = data.rowspans[rowIndex][colIndex] || 1;
+                let colspan = data.colspans[rowIndex][colIndex] || 1;
+                let cellType = (rowspan > 1 || colspan > 1) ? 'th' : 'td';
 
-        data.tableData.forEach((rowData, rowIndex) => {
-            const tr = document.createElement("tr");
-            rowData.forEach((cellData, cellIndex) => {
-                const td = document.createElement("td");
-                td.textContent = cellData.text;
-
-                // 병합 셀 처리
-                const mergedCell = data.mergedCells.find(cell => cell.row === rowIndex && cell.col === cellIndex);
-                if (mergedCell) {
-                    td.rowSpan = mergedCell.rowSpan || 1;
-                    td.colSpan = mergedCell.colSpan || 1;
-                }
-
-                // 스타일 및 병합 데이터 처리
-                td.style.backgroundColor = data.backgrounds[rowIndex][cellIndex];
-                td.style.color = data.fontColors[rowIndex][cellIndex];
-                td.style.textAlign = data.horizontalAlignments[rowIndex][cellIndex];
-                td.style.verticalAlign = data.verticalAlignments[rowIndex][cellIndex];
-                tr.appendChild(td);
+                tableHTML += `<${cellType} rowspan="${rowspan}" colspan="${colspan}" style="background-color: ${data.backgrounds[rowIndex][colIndex]}; color: ${data.fontColors[rowIndex][colIndex]}; text-align: ${data.horizontalAlignments[rowIndex][colIndex]}; vertical-align: ${data.verticalAlignments[rowIndex][colIndex]};">${cell}</${cellType}>`;
             });
-            tbody.appendChild(tr);
+            tableHTML += '</tr>';
         });
-        table.appendChild(tbody);
+        
+        tableElement.innerHTML = tableHTML;
     }
 });
