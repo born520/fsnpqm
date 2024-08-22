@@ -51,7 +51,12 @@ function mergeCells(mergedCells) {
     const { row, column, numRows, numColumns } = mergeInfo;
 
     // Get the first cell
-    const firstCell = table.rows[row].cells[column];
+    const firstCell = table.rows[row]?.cells[column];
+
+    if (!firstCell) {
+      console.error(`Invalid cell at row ${row}, column ${column}`);
+      return; // Skip this merge if the first cell doesn't exist
+    }
 
     // Set rowSpan and colSpan
     firstCell.rowSpan = numRows;
@@ -60,7 +65,7 @@ function mergeCells(mergedCells) {
     // Delete the other cells that are merged into the first cell
     for (let r = row; r < row + numRows; r++) {
       for (let c = column + (r === row ? 1 : 0); c < column + numColumns; c++) {
-        if (table.rows[r].cells[c]) {
+        if (table.rows[r] && table.rows[r].cells[c]) {
           table.rows[r].deleteCell(c);
         }
       }
