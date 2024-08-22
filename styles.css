@@ -12,10 +12,10 @@ table {
     width: 100%;
     max-width: 1200px;
     border-collapse: collapse;
-    table-layout: fixed; /* 추가 */
+    table-layout: fixed; /* 고정된 테이블 레이아웃 */
 }
 
-td {
+td, th {
     padding: 8px;
     border: 1px solid #dddddd;
     text-align: center;
@@ -24,12 +24,8 @@ td {
 }
 
 th {
-    padding: 10px;
     background-color: #14766a;
     color: white;
-    border: 1px solid #dddddd;
-    text-align: center;
-    vertical-align: middle;
 }
 
 tr:nth-child(even) {
