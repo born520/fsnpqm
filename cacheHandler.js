@@ -25,7 +25,7 @@ function setCachedData(data) {
 
 function renderTable(data) {
     const table = document.getElementById('dataTable');
-    table.innerHTML = ''; // 기존 내용을 비웁니다.
+    table.innerHTML = ''; // Clear the table before rendering
 
     data.tableData.forEach((row, rowIndex) => {
         const tr = table.insertRow();
@@ -43,6 +43,7 @@ function renderTable(data) {
         });
     });
 
+    // Handle merged cells
     data.mergedCells.forEach(merge => {
         const startCell = table.rows[merge.row].cells[merge.column];
         startCell.rowSpan = merge.numRows;
