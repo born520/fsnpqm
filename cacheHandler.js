@@ -38,6 +38,7 @@ function renderTable(data) {
       cell.style.fontWeight = data.fontWeights[rowIndex][cellIndex];
       cell.style.fontStyle = data.fontStyles[rowIndex][cellIndex];
       cell.style.fontSize = data.fontSizes[rowIndex][cellIndex] + "px";
+      cell.style.border = "1px solid black";  // Add border to each cell
     });
   });
 
