@@ -11,8 +11,7 @@ async function fetchDataAndRenderTable() {
 
 // 테이블 렌더링
 function renderTable(data) {
-    const table = document.getElementById('dataTable'); // id를 dataTable로 수정
-    
+    const table = document.getElementById('dataTable'); // HTML의 id와 일치
     if (!table) {
         console.error("Table element with id 'dataTable' not found.");
         return;
@@ -20,6 +19,9 @@ function renderTable(data) {
 
     const tableData = data.tableData;
     const mergedCells = data.mergedCells;
+
+    // 기존 테이블 내용 제거
+    table.innerHTML = '';
 
     // 테이블 셀 추가
     tableData.forEach((row, rowIndex) => {
@@ -38,8 +40,11 @@ function renderTable(data) {
         });
     });
 
-    // 셀 병합
+    // 셀 병합 처리
     mergedCells.forEach(merge => {
+        const cell = table.rows[merge.row].cells[merge.column];
+        cell.rowSpan = merge.numRows;
+        cell.colSpan = merge.numColumns;
         for (let i = 0; i < merge.numRows; i++) {
             for (let j = 0; j < merge.numColumns; j++) {
                 if (i !== 0 || j !== 0) {
@@ -47,9 +52,6 @@ function renderTable(data) {
                 }
             }
         }
-        const cell = table.rows[merge.row].cells[merge.column];
-        cell.rowSpan = merge.numRows;
-        cell.colSpan = merge.numColumns;
     });
 }
 
