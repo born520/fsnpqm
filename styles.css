@@ -11,11 +11,10 @@ body {
 
 #data-table {
     margin: 0 auto;
-    width: auto;
+    width: 90%; /* 테이블이 화면에 꽉 차지 않도록 조정 */
     display: table;
     border-collapse: collapse;
     background-color: white;
-    max-width: 100%; /* 테이블이 화면을 넘지 않도록 설정 */
     table-layout: fixed; /* 테이블 셀 크기를 고정 */
 }
 
