@@ -13,25 +13,29 @@ function fetchDataAndRender() {
 function renderTable(data) {
     const table = document.getElementById('data-table');
     table.style.display = 'table';
+    table.innerHTML = ''; // 기존의 테이블 내용을 비웁니다.
 
     data.tableData.forEach((row, rowIndex) => {
         const tr = document.createElement('tr');
         row.forEach((cell, cellIndex) => {
-            const td = document.createElement('td');
-
             if (cell) {
+                const td = document.createElement('td');
                 td.innerText = cell.text || '';
                 td.style.backgroundColor = data.backgrounds[rowIndex][cellIndex];
                 td.style.color = data.fontColors[rowIndex][cellIndex];
                 td.style.textAlign = data.horizontalAlignments[rowIndex][cellIndex];
                 td.style.verticalAlign = data.verticalAlignments[rowIndex][cellIndex];
-                td.rowSpan = cell.rowSpan || 1;
-                td.colSpan = cell.colSpan || 1;
-            } else {
-                console.warn(`Cell at [${rowIndex}, ${cellIndex}] is undefined.`);
-            }
 
-            tr.appendChild(td);
+                if (cell.rowSpan) {
+                    td.rowSpan = cell.rowSpan;
+                }
+
+                if (cell.colSpan) {
+                    td.colSpan = cell.colSpan;
+                }
+
+                tr.appendChild(td);
+            }
         });
         table.appendChild(tr);
     });
