@@ -6,6 +6,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin: 0;
+    table-layout: fixed; /* 테이블 셀 너비를 고정 */
 }
 
 th, td {
@@ -22,6 +23,7 @@ th {
 
 #data-table {
     margin-top: 0; /* 테이블 위의 공간 제거 */
+    width: 100%; /* 테이블을 페이지의 전체 너비에 맞춤 */
 }
 
 .merged-cell {
