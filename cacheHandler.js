@@ -27,6 +27,7 @@ function renderTable(data) {
     const table = document.getElementById('dataTable');
     table.innerHTML = ''; // Clear the table before rendering
 
+    // Render the table rows and cells
     data.tableData.forEach((row, rowIndex) => {
         const tr = table.insertRow();
         row.forEach((cell, cellIndex) => {
@@ -53,7 +54,7 @@ function renderTable(data) {
             for (let j = merge.column; j < merge.column + merge.numColumns; j++) {
                 if (i === merge.row && j === merge.column) continue;
                 if (table.rows[i] && table.rows[i].cells[j]) {
-                    table.rows[i].deleteCell(j);
+                    table.rows[i].deleteCell(j - merge.column);
                 }
             }
         }
