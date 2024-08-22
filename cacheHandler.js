@@ -43,10 +43,14 @@ function renderTable(data) {
         td.rowSpan = numRows;
         td.colSpan = numColumns;
 
+        // Remove cells that were merged
         for (let i = 0; i < numRows; i++) {
             for (let j = 0; j < numColumns; j++) {
                 if (i !== 0 || j !== 0) {
-                    table.rows[row + i].deleteCell(column);
+                    const targetRow = table.rows[row + i];
+                    if (targetRow && targetRow.cells[column]) {
+                        targetRow.deleteCell(column);
+                    }
                 }
             }
         }
