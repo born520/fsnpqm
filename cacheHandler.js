@@ -1,75 +1,51 @@
-document.addEventListener("DOMContentLoaded", function () {
-  fetchDataAndRenderTable();
-});
-
-function fetchDataAndRenderTable() {
-  fetch("https://script.google.com/macros/s/AKfycbw0NE9hOXBO2-M8xC4KBNa3QasFUvnvey3ODAnl9cRQmS6Snb5yly_3xJmYOIpE4DixnQ/exec")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      renderTable(data);
-    })
-    .catch((error) => {
-      console.error("Failed to fetch data:", error);
-    });
+// 데이터 가져오기
+async function fetchDataAndRenderTable() {
+    try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbw0NE9hOXBO2-M8xC4KBNa3QasFUvnvey3ODAnl9cRQmS6Snb5yly_3xJmYOIpE4DixnQ/exec');
+        const data = await response.json();
+        renderTable(data);
+    } catch (error) {
+        console.error('Failed to fetch data:', error);
+    }
 }
 
+// 테이블 렌더링
 function renderTable(data) {
-  const table = document.getElementById("dataTable");
+    const table = document.getElementById('table');
+    const tableData = data.tableData;
+    const mergedCells = data.mergedCells;
 
-  // Clear existing table contents
-  table.innerHTML = "";
-
-  data.tableData.forEach((rowData, rowIndex) => {
-    const row = table.insertRow();
-    rowData.forEach((cellData, cellIndex) => {
-      const cell = row.insertCell();
-      cell.innerHTML = cellData.richText || cellData.text || "";
-
-      // Apply styling
-      cell.style.backgroundColor = data.backgrounds[rowIndex][cellIndex];
-      cell.style.color = data.fontColors[rowIndex][cellIndex];
-      cell.style.textAlign = data.horizontalAlignments[rowIndex][cellIndex];
-      cell.style.verticalAlign = data.verticalAlignments[rowIndex][cellIndex];
-      cell.style.fontWeight = data.fontWeights[rowIndex][cellIndex];
-      cell.style.fontStyle = data.fontStyles[rowIndex][cellIndex];
-      cell.style.fontSize = data.fontSizes[rowIndex][cellIndex] + "px";
-      cell.style.border = "1px solid black";  // Add border to each cell
+    // 테이블 셀 추가
+    tableData.forEach((row, rowIndex) => {
+        const tr = table.insertRow();
+        row.forEach((cell, cellIndex) => {
+            const td = tr.insertCell();
+            td.innerHTML = cell.text || '';
+            td.style.backgroundColor = data.backgrounds[rowIndex][cellIndex];
+            td.style.color = data.fontColors[rowIndex][cellIndex];
+            td.style.textAlign = data.horizontalAlignments[rowIndex][cellIndex];
+            td.style.verticalAlign = data.verticalAlignments[rowIndex][cellIndex];
+            td.style.fontWeight = data.fontWeights[rowIndex][cellIndex];
+            td.style.fontStyle = data.fontStyles[rowIndex][cellIndex];
+            td.style.fontSize = `${data.fontSizes[rowIndex][cellIndex]}px`;
+            td.style.border = '1px solid black'; // 테두리 스타일 추가
+        });
     });
-  });
 
-  mergeCells(data.mergedCells);
-}
-
-function mergeCells(mergedCells) {
-  const table = document.getElementById("dataTable");
-
-  mergedCells.forEach((mergeInfo) => {
-    const { row, column, numRows, numColumns } = mergeInfo;
-
-    // Get the first cell
-    const firstCell = table.rows[row]?.cells[column];
-
-    if (!firstCell) {
-      console.error(`Invalid cell at row ${row}, column ${column}`);
-      return; // Skip this merge if the first cell doesn't exist
-    }
-
-    // Set rowSpan and colSpan
-    firstCell.rowSpan = numRows;
-    firstCell.colSpan = numColumns;
-
-    // Delete the other cells that are merged into the first cell
-    for (let r = row; r < row + numRows; r++) {
-      for (let c = column + (r === row ? 1 : 0); c < column + numColumns; c++) {
-        if (table.rows[r] && table.rows[r].cells[c]) {
-          table.rows[r].deleteCell(c - (r > row ? 0 : column + 1));
+    // 셀 병합
+    mergedCells.forEach(merge => {
+        for (let i = 0; i < merge.numRows; i++) {
+            for (let j = 0; j < merge.numColumns; j++) {
+                if (i !== 0 || j !== 0) {
+                    table.rows[merge.row + i].deleteCell(merge.column);
+                }
+            }
         }
-      }
-    }
-  });
+        const cell = table.rows[merge.row].cells[merge.column];
+        cell.rowSpan = merge.numRows;
+        cell.colSpan = merge.numColumns;
+    });
 }
+
+// 페이지가 로드되면 데이터 가져오기 및 테이블 렌더링
+document.addEventListener('DOMContentLoaded', fetchDataAndRenderTable);
