@@ -17,17 +17,17 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     
     function renderCachedData() {
-        // 캐시 데이터를 사용한 테이블 렌더링
         const cachedData = {
             tableData: [
-                // ...여기에 캐시된 데이터 추가
+                // 캐시된 데이터 추가
             ],
             backgrounds: [],
             fontColors: [],
             horizontalAlignments: [],
             verticalAlignments: [],
-            mergedCells: [], // 병합 셀에 대한 정보 추가
-            // 기타 데이터
+            mergedCells: [
+                // 병합 셀에 대한 정보 추가
+            ],
         };
         renderTable(cachedData);
     }
@@ -42,12 +42,14 @@ document.addEventListener("DOMContentLoaded", function() {
             rowData.forEach((cellData, cellIndex) => {
                 const td = document.createElement("td");
                 td.textContent = cellData.text;
+
                 // 병합 셀 처리
                 const mergedCell = data.mergedCells.find(cell => cell.row === rowIndex && cell.col === cellIndex);
                 if (mergedCell) {
                     td.rowSpan = mergedCell.rowSpan || 1;
                     td.colSpan = mergedCell.colSpan || 1;
                 }
+
                 // 스타일 및 병합 데이터 처리
                 td.style.backgroundColor = data.backgrounds[rowIndex][cellIndex];
                 td.style.color = data.fontColors[rowIndex][cellIndex];
