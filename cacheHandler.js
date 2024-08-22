@@ -15,9 +15,18 @@ function renderTable(data) {
     table.style.display = 'table';
     table.innerHTML = ''; // 기존의 테이블 내용을 비웁니다.
 
+    const mergeTracker = {}; // 병합된 셀 추적
+
     data.tableData.forEach((row, rowIndex) => {
         const tr = document.createElement('tr');
         row.forEach((cell, cellIndex) => {
+            const cellId = `${rowIndex}-${cellIndex}`;
+
+            // 병합된 셀의 경우, 이미 출력된 병합 범위를 건너뜀
+            if (mergeTracker[cellId]) {
+                return;
+            }
+
             if (cell) {
                 const td = document.createElement('td');
                 td.innerText = cell.text || '';
@@ -28,10 +37,20 @@ function renderTable(data) {
 
                 if (cell.rowSpan && cell.rowSpan > 1) {
                     td.rowSpan = cell.rowSpan;
+
+                    // 병합된 셀의 나머지 범위를 추적
+                    for (let i = 1; i < cell.rowSpan; i++) {
+                        mergeTracker[`${rowIndex + i}-${cellIndex}`] = true;
+                    }
                 }
 
                 if (cell.colSpan && cell.colSpan > 1) {
                     td.colSpan = cell.colSpan;
+
+                    // 병합된 셀의 나머지 범위를 추적
+                    for (let i = 1; i < cell.colSpan; i++) {
+                        mergeTracker[`${rowIndex}-${cellIndex + i}`] = true;
+                    }
                 }
 
                 tr.appendChild(td);
