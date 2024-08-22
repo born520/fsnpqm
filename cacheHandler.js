@@ -58,12 +58,16 @@ function renderTable(data) {
 
     // Set row heights and column widths
     data.rowHeights.forEach((height, index) => {
-        table.rows[index].style.height = height + 'px';
+        if (table.rows[index]) {
+            table.rows[index].style.height = height + 'px';
+        }
     });
 
     data.columnWidths.forEach((width, index) => {
         table.querySelectorAll('tr').forEach(row => {
-            row.cells[index].style.width = width + 'px';
+            if (row.cells[index]) {
+                row.cells[index].style.width = width + 'px';
+            }
         });
     });
 }
