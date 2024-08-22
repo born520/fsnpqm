@@ -45,9 +45,10 @@ function renderTable(data) {
 }
 
 function mergeCells(mergedCells) {
+  const table = document.getElementById("dataTable");
+
   mergedCells.forEach((mergeInfo) => {
     const { row, column, numRows, numColumns } = mergeInfo;
-    const table = document.getElementById("dataTable");
 
     // Get the first cell
     const firstCell = table.rows[row].cells[column];
@@ -59,7 +60,9 @@ function mergeCells(mergedCells) {
     // Delete the other cells that are merged into the first cell
     for (let r = row; r < row + numRows; r++) {
       for (let c = column + (r === row ? 1 : 0); c < column + numColumns; c++) {
-        table.rows[r].deleteCell(column + (r === row ? 1 : 0));
+        if (table.rows[r].cells[c]) {
+          table.rows[r].deleteCell(c);
+        }
       }
     }
   });
