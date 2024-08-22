@@ -1,73 +1,59 @@
-// cacheHandler.js
 document.addEventListener('DOMContentLoaded', fetchDataAndRenderTable);
 
-async function fetchDataAndRenderTable() {
-    try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbzsR3KoRpG4c8EunHjLFDgtRswLe9rxJRnRmwfC7OLdjOYGOoPMPuN9IhFguBTcYOF3/exec');
-        const data = await response.json();
-        renderTable(data);
-    } catch (error) {
-        console.error('Failed to fetch data:', error);
+function fetchDataAndRenderTable() {
+    const cachedData = getCachedData();
+    if (cachedData) {
+        renderTable(cachedData);
+    } else {
+        fetch('https://script.google.com/macros/s/AKfycbzsR3KoRpG4c8EunHjLFDgtRswLe9rxJRnRmwfC7OLdjOYGOoPMPuN9IhFguBTcYOF3/exec')
+            .then(response => response.json())
+            .then(data => {
+                setCachedData(data);
+                renderTable(data);
+            })
+            .catch(error => console.error('Error fetching data:', error));
     }
+}
+
+function getCachedData() {
+    const cachedData = localStorage.getItem('cachedData_' + pageKey);
+    return cachedData ? JSON.parse(cachedData) : null;
+}
+
+function setCachedData(data) {
+    localStorage.setItem('cachedData_' + pageKey, JSON.stringify(data));
 }
 
 function renderTable(data) {
     const table = document.getElementById('dataTable');
-    
-    // Clear existing content
-    table.innerHTML = '';
+    table.innerHTML = ''; // 기존 내용을 비웁니다.
 
-    data.tableData.forEach((rowData, rowIndex) => {
-        const row = table.insertRow(-1);
-
-        rowData.forEach((cellData, colIndex) => {
-            // Check if this cell is within any merged cell area
-            const isMerged = data.mergedCells.some(cell => 
-                rowIndex >= cell.row &&
-                rowIndex < cell.row + cell.numRows &&
-                colIndex >= cell.column &&
-                colIndex < cell.column + cell.numColumns
-            );
-            
-            if (!isMerged || (rowIndex === data.mergedCells.find(cell => cell.row === rowIndex && cell.column === colIndex)?.row && colIndex === data.mergedCells.find(cell => cell.row === rowIndex && cell.column === colIndex)?.column)) {
-                const cell = row.insertCell(-1);
-                cell.innerHTML = cellData.text;
-
-                // Apply styling
-                cell.style.backgroundColor = data.backgrounds[rowIndex][colIndex];
-                cell.style.color = data.fontColors[rowIndex][colIndex];
-                cell.style.textAlign = data.horizontalAlignments[rowIndex][colIndex];
-                cell.style.verticalAlign = data.verticalAlignments[rowIndex][colIndex];
-                cell.style.fontWeight = data.fontWeights[rowIndex][colIndex];
-                cell.style.fontStyle = data.fontStyles[rowIndex][colIndex];
-                cell.style.fontSize = data.fontSizes[rowIndex][colIndex] + 'px';
-
-                // Handle merged cells
-                const mergeInfo = data.mergedCells.find(cell => cell.row === rowIndex && cell.column === colIndex);
-                if (mergeInfo) {
-                    if (mergeInfo.numRows > 1) {
-                        cell.rowSpan = mergeInfo.numRows;
-                    }
-                    if (mergeInfo.numColumns > 1) {
-                        cell.colSpan = mergeInfo.numColumns;
-                    }
-                }
-            }
+    data.tableData.forEach((row, rowIndex) => {
+        const tr = table.insertRow();
+        row.forEach((cell, cellIndex) => {
+            const td = tr.insertCell();
+            td.textContent = cell.text;
+            td.style.backgroundColor = data.backgrounds[rowIndex][cellIndex];
+            td.style.color = data.fontColors[rowIndex][cellIndex];
+            td.style.fontWeight = data.fontWeights[rowIndex][cellIndex];
+            td.style.fontStyle = data.fontStyles[rowIndex][cellIndex];
+            td.style.fontSize = data.fontSizes[rowIndex][cellIndex] + 'px';
+            td.style.textDecoration = data.strikethroughs[rowIndex][cellIndex] ? 'line-through' : 'none';
+            td.style.textAlign = data.horizontalAlignments[rowIndex][cellIndex];
+            td.style.verticalAlign = data.verticalAlignments[rowIndex][cellIndex];
         });
     });
 
-    // Set row heights and column widths
-    data.rowHeights.forEach((height, index) => {
-        if (table.rows[index]) {
-            table.rows[index].style.height = height + 'px';
+    data.mergedCells.forEach(merge => {
+        const startCell = table.rows[merge.row].cells[merge.column];
+        startCell.rowSpan = merge.numRows;
+        startCell.colSpan = merge.numColumns;
+
+        for (let i = merge.row; i < merge.row + merge.numRows; i++) {
+            for (let j = merge.column; j < merge.column + merge.numColumns; j++) {
+                if (i === merge.row && j === merge.column) continue;
+                table.rows[i].deleteCell(merge.column);
+            }
         }
-    });
-
-    data.columnWidths.forEach((width, index) => {
-        table.querySelectorAll('tr').forEach(row => {
-            if (row.cells[index]) {
-                row.cells[index].style.width = width + 'px';
-            }
-        });
     });
 }
