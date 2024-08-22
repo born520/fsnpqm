@@ -10,6 +10,13 @@ async function fetchDataAndRenderTable() {
 
 function renderTable(data) {
   const table = document.getElementById('dataTable');
+  
+  // 확인: dataTable 요소가 존재하는지 확인
+  if (!table) {
+    console.error('Table element with id "dataTable" not found.');
+    return;
+  }
+
   table.innerHTML = ''; // Clear existing table content
 
   // Loop through each row of data
