@@ -67,7 +67,7 @@ function mergeCells(mergedCells) {
     for (let r = row; r < row + numRows; r++) {
       for (let c = column + (r === row ? 1 : 0); c < column + numColumns; c++) {
         if (table.rows[r] && table.rows[r].cells[c]) {
-          table.rows[r].deleteCell(c);
+          table.rows[r].deleteCell(c - (r > row ? 0 : column + 1));
         }
       }
     }
