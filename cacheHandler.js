@@ -1,35 +1,42 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const tableElement = document.getElementById('data-table');
-
-    fetchDataAndRender();
-
-    function fetchDataAndRender() {
-        fetch('https://script.google.com/macros/s/AKfycbxlWGaTrXFykS1al6avOG4L3rq2SxCg5TEXEspr3x99x5a6HcNZkGMgbiPDB-lWFn1ptQ/exec')
-            .then(response => response.json())
-            .then(data => {
-                renderTable(data);
-            })
-            .catch(error => {
-                console.error('Failed to fetch data:', error);
-            });
-    }
-
-    function renderTable(data) {
-        tableElement.style.display = 'table';
-        let tableHTML = '';
-        
-        data.tableData.forEach((row, rowIndex) => {
-            tableHTML += '<tr>';
-            row.forEach((cell, colIndex) => {
-                let rowspan = data.rowspans[rowIndex][colIndex] || 1;
-                let colspan = data.colspans[rowIndex][colIndex] || 1;
-                let cellType = (rowspan > 1 || colspan > 1) ? 'th' : 'td';
-
-                tableHTML += `<${cellType} rowspan="${rowspan}" colspan="${colspan}" style="background-color: ${data.backgrounds[rowIndex][colIndex]}; color: ${data.fontColors[rowIndex][colIndex]}; text-align: ${data.horizontalAlignments[rowIndex][colIndex]}; vertical-align: ${data.verticalAlignments[rowIndex][colIndex]};">${cell}</${cellType}>`;
-            });
-            tableHTML += '</tr>';
+function fetchDataAndRender() {
+    fetch('https://script.google.com/macros/s/AKfycbxlWGaTrXFykS1al6avOG4L3rq2SxCg5TEXEspr3x99x5a6HcNZkGMgbiPDB-lWFn1ptQ/exec')
+        .then(response => response.json())
+        .then(data => {
+            console.log("Fetched data:", data); // 데이터를 확인합니다.
+            renderTable(data);
+        })
+        .catch(error => {
+            console.error("Failed to fetch data:", error);
         });
-        
-        tableElement.innerHTML = tableHTML;
-    }
-});
+}
+
+function renderTable(data) {
+    const table = document.getElementById('data-table');
+    table.style.display = 'table';
+
+    data.tableData.forEach((row, rowIndex) => {
+        const tr = document.createElement('tr');
+        row.forEach((cell, cellIndex) => {
+            const td = document.createElement('td');
+
+            if (cell) {
+                td.innerText = cell.text || '';
+                td.style.backgroundColor = data.backgrounds[rowIndex][cellIndex];
+                td.style.color = data.fontColors[rowIndex][cellIndex];
+                td.style.textAlign = data.horizontalAlignments[rowIndex][cellIndex];
+                td.style.verticalAlign = data.verticalAlignments[rowIndex][cellIndex];
+                td.rowSpan = cell.rowSpan || 1;
+                td.colSpan = cell.colSpan || 1;
+            } else {
+                console.warn(`Cell at [${rowIndex}, ${cellIndex}] is undefined.`);
+            }
+
+            tr.appendChild(td);
+        });
+        table.appendChild(tr);
+    });
+
+    console.log("Table rendering completed.");
+}
+
+fetchDataAndRender();
