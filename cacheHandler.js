@@ -16,24 +16,27 @@ function renderTable(data) {
         const tr = table.insertRow();
         row.forEach((cell, cellIndex) => {
             let skipCell = false;
+            let td;
+
             data.mergedCells.forEach((mergedCell) => {
                 if (
-                    rowIndex > mergedCell.row && 
+                    rowIndex >= mergedCell.row &&
                     rowIndex < mergedCell.row + mergedCell.numRows &&
-                    cellIndex > mergedCell.column &&
+                    cellIndex >= mergedCell.column &&
                     cellIndex < mergedCell.column + mergedCell.numColumns
                 ) {
-                    skipCell = true;
-                }
-            });
-            if (!skipCell) {
-                const td = tr.insertCell();
-                data.mergedCells.forEach((mergedCell) => {
-                    if (mergedCell.row === rowIndex && mergedCell.column === cellIndex) {
+                    if (rowIndex === mergedCell.row && cellIndex === mergedCell.column) {
+                        td = tr.insertCell();
                         td.rowSpan = mergedCell.numRows;
                         td.colSpan = mergedCell.numColumns;
+                    } else {
+                        skipCell = true;
                     }
-                });
+                }
+            });
+
+            if (!skipCell) {
+                if (!td) td = tr.insertCell();
                 td.textContent = cell.text;
                 td.style.backgroundColor = data.backgrounds[rowIndex][cellIndex];
                 td.style.color = data.fontColors[rowIndex][cellIndex];
