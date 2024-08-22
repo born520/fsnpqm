@@ -1,47 +1,59 @@
-function fetchDataAndRender() {
-    fetch('https://script.google.com/macros/s/AKfycbwSQwQH5mUA9bTW8VP09eR_uO-MroUDvQy29COsAZ51hYx6_InNu14liAJs8HtXcU9xlA/exec')
+function fetchDataAndRenderTable() {
+    fetch('data.json')
         .then(response => response.json())
-        .then(data => {
-            console.log("Fetched data:", data); // 데이터를 확인합니다.
-            renderTable(data);
-        })
-        .catch(error => {
-            console.error("Failed to fetch data:", error);
-        });
+        .then(data => renderTable(data))
+        .catch(error => console.error('Failed to fetch data:', error));
 }
 
 function renderTable(data) {
-    const table = document.getElementById('data-table');
-    table.style.display = 'table';
-    table.innerHTML = ''; // 기존의 테이블 내용을 비웁니다.
+    const table = document.createElement('table');
+    let skipCells = {}; // 병합된 셀로 인해 건너뛰어야 할 셀들 추적
 
-    data.tableData.forEach((row, rowIndex) => {
-        const tr = document.createElement('tr');
-        row.forEach((cell, cellIndex) => {
-            if (cell) {
-                const td = document.createElement('td');
-                td.innerText = cell.text || '';
-                td.style.backgroundColor = data.backgrounds[rowIndex][cellIndex];
-                td.style.color = data.fontColors[rowIndex][cellIndex];
-                td.style.textAlign = data.horizontalAlignments[rowIndex][cellIndex];
-                td.style.verticalAlign = data.verticalAlignments[rowIndex][cellIndex];
+    data.tableData.forEach((rowData, rowIndex) => {
+        const row = document.createElement('tr');
+        
+        rowData.forEach((cellData, colIndex) => {
+            if (skipCells[`${rowIndex}-${colIndex}`]) return; // 건너뛰기
+            
+            const cell = document.createElement('td');
+            let merged = false;
 
-                if (cell.rowSpan && cell.rowSpan > 1) {
-                    td.rowSpan = cell.rowSpan;
+            data.mergedCells.forEach(merge => {
+                if (merge.row === rowIndex && merge.column === colIndex) {
+                    cell.rowSpan = merge.numRows;
+                    cell.colSpan = merge.numColumns;
+                    merged = true;
+                    // 병합 범위 내의 셀들을 건너뛰도록 설정
+                    for (let r = rowIndex; r < rowIndex + merge.numRows; r++) {
+                        for (let c = colIndex; c < colIndex + merge.numColumns; c++) {
+                            if (!(r === rowIndex && c === colIndex)) {
+                                skipCells[`${r}-${c}`] = true;
+                            }
+                        }
+                    }
                 }
+            });
 
-                if (cell.colSpan && cell.colSpan > 1) {
-                    td.colSpan = cell.colSpan;
-                }
-
-                // 현재 셀이 병합 대상이 아닌 경우에만 추가
-                tr.appendChild(td);
+            cell.innerText = cellData.text;
+            cell.style.backgroundColor = data.backgrounds[rowIndex][colIndex];
+            cell.style.color = data.fontColors[rowIndex][colIndex];
+            cell.style.textAlign = data.horizontalAlignments[rowIndex][colIndex];
+            cell.style.verticalAlign = data.verticalAlignments[rowIndex][colIndex];
+            cell.style.fontWeight = data.fontWeights[rowIndex][colIndex];
+            cell.style.fontStyle = data.fontStyles[rowIndex][colIndex];
+            cell.style.fontSize = data.fontSizes[rowIndex][colIndex] + 'px';
+            if (data.strikethroughs[rowIndex][colIndex]) {
+                cell.style.textDecoration = 'line-through';
             }
+
+            row.appendChild(cell);
         });
-        table.appendChild(tr);
+
+        table.appendChild(row);
     });
 
-    console.log("Table rendering completed.");
+    document.body.appendChild(table);
 }
 
-fetchDataAndRender();
+// 페이지가 로드될 때 데이터를 가져오고 테이블을 렌더링
+document.addEventListener('DOMContentLoaded', fetchDataAndRenderTable);
