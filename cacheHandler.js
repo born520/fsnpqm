@@ -69,6 +69,7 @@ function renderTable(data) {
 
                 td.innerHTML = cellData.text || '';
 
+                // 셀 스타일 적용
                 td.style.backgroundColor = data.backgrounds[rowIndex][colIndex] || '';
                 td.style.color = data.fontColors[rowIndex][colIndex] || '';
                 td.style.textAlign = data.horizontalAlignments[rowIndex][colIndex] || 'center';
