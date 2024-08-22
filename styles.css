@@ -4,7 +4,7 @@ body {
     padding: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* 상단 정렬을 위해 flex-start로 설정 */
     height: 100vh;
 }
 
@@ -13,6 +13,7 @@ table {
     max-width: 1200px;
     border-collapse: collapse;
     table-layout: fixed; /* 고정된 테이블 레이아웃 */
+    margin-top: 20px; /* 위쪽 여백을 줄입니다 */
 }
 
 td, th {
