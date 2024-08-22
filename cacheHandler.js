@@ -42,13 +42,17 @@ function renderTable(data) {
 
     // 셀 병합 처리
     mergedCells.forEach(merge => {
-        const cell = table.rows[merge.row].cells[merge.column];
-        cell.rowSpan = merge.numRows;
-        cell.colSpan = merge.numColumns;
+        const startCell = table.rows[merge.row].cells[merge.column];
+        startCell.rowSpan = merge.numRows;
+        startCell.colSpan = merge.numColumns;
+
         for (let i = 0; i < merge.numRows; i++) {
             for (let j = 0; j < merge.numColumns; j++) {
-                if (i !== 0 || j !== 0) {
-                    table.rows[merge.row + i].deleteCell(merge.column);
+                if (i === 0 && j === 0) continue; // 시작 셀은 유지
+                const rowIndex = merge.row + i;
+                const cellIndex = merge.column + j;
+                if (table.rows[rowIndex] && table.rows[rowIndex].cells[cellIndex]) {
+                    table.rows[rowIndex].deleteCell(cellIndex);
                 }
             }
         }
