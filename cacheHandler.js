@@ -1,6 +1,6 @@
 async function fetchDataAndRenderTable() {
   try {
-    const response = await fetch('https://script.google.com/macros/s/AKfycbwSQwQH5mUA9bTW8VP09eR_uO-MroUDvQy29COsAZ51hYx6_InNu14liAJs8HtXcU9xlA/exec');
+    const response = await fetch('https://script.google.com/macros/s/AKfycbw0NE9hOXBO2-M8xC4KBNa3QasFUvnvey3ODAnl9cRQmS6Snb5yly_3xJmYOIpE4DixnQ/exec');
     const jsonData = await response.json();
     renderTable(jsonData);
   } catch (error) {
