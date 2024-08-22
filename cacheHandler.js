@@ -11,7 +11,13 @@ async function fetchDataAndRenderTable() {
 
 // 테이블 렌더링
 function renderTable(data) {
-    const table = document.getElementById('table');
+    const table = document.getElementById('dataTable'); // id를 dataTable로 수정
+    
+    if (!table) {
+        console.error("Table element with id 'dataTable' not found.");
+        return;
+    }
+
     const tableData = data.tableData;
     const mergedCells = data.mergedCells;
 
