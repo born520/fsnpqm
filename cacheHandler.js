@@ -1,63 +1,66 @@
-async function fetchDataAndRenderTable() {
-  try {
-    const response = await fetch('https://script.google.com/macros/s/AKfycbw0NE9hOXBO2-M8xC4KBNa3QasFUvnvey3ODAnl9cRQmS6Snb5yly_3xJmYOIpE4DixnQ/exec');
-    const jsonData = await response.json();
-    renderTable(jsonData);
-  } catch (error) {
-    console.error('Failed to fetch data:', error);
-  }
+document.addEventListener("DOMContentLoaded", function () {
+  fetchDataAndRenderTable();
+});
+
+function fetchDataAndRenderTable() {
+  fetch("https://script.google.com/macros/s/AKfycbw0NE9hOXBO2-M8xC4KBNa3QasFUvnvey3ODAnl9cRQmS6Snb5yly_3xJmYOIpE4DixnQ/exec")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      renderTable(data);
+    })
+    .catch((error) => {
+      console.error("Failed to fetch data:", error);
+    });
 }
 
 function renderTable(data) {
-  const table = document.getElementById('dataTable');
-  
-  // 확인: dataTable 요소가 존재하는지 확인
-  if (!table) {
-    console.error('Table element with id "dataTable" not found.');
-    return;
-  }
+  const table = document.getElementById("dataTable");
 
-  table.innerHTML = ''; // Clear existing table content
+  // Clear existing table contents
+  table.innerHTML = "";
 
-  // Loop through each row of data
-  data.tableData.forEach((row, rowIndex) => {
-    const tr = document.createElement('tr');
-    row.forEach((cell, cellIndex) => {
-      const td = document.createElement('td');
+  data.tableData.forEach((rowData, rowIndex) => {
+    const row = table.insertRow();
+    rowData.forEach((cellData, cellIndex) => {
+      const cell = row.insertCell();
+      cell.innerHTML = cellData.richText || cellData.text || "";
 
-      // Set cell text and style
-      td.textContent = cell.text;
-      td.style.backgroundColor = data.backgrounds[rowIndex][cellIndex];
-      td.style.color = data.fontColors[rowIndex][cellIndex];
-      td.style.textAlign = data.horizontalAlignments[rowIndex][cellIndex];
-      td.style.verticalAlign = data.verticalAlignments[rowIndex][cellIndex];
-      td.style.fontWeight = data.fontWeights[rowIndex][cellIndex];
-      td.style.fontStyle = data.fontStyles[rowIndex][cellIndex];
-      td.style.fontSize = `${data.fontSizes[rowIndex][cellIndex]}px`;
-      td.style.border = '1px solid #000'; // Adjust as necessary
-
-      tr.appendChild(td);
+      // Apply styling
+      cell.style.backgroundColor = data.backgrounds[rowIndex][cellIndex];
+      cell.style.color = data.fontColors[rowIndex][cellIndex];
+      cell.style.textAlign = data.horizontalAlignments[rowIndex][cellIndex];
+      cell.style.verticalAlign = data.verticalAlignments[rowIndex][cellIndex];
+      cell.style.fontWeight = data.fontWeights[rowIndex][cellIndex];
+      cell.style.fontStyle = data.fontStyles[rowIndex][cellIndex];
+      cell.style.fontSize = data.fontSizes[rowIndex][cellIndex] + "px";
     });
-    table.appendChild(tr);
   });
 
-  // Apply merged cells
-  data.mergedCells.forEach((merge) => {
-    mergeCells(table, merge.row, merge.column, merge.numRows, merge.numColumns);
-  });
+  mergeCells(data.mergedCells);
 }
 
-function mergeCells(table, startRow, startCol, numRows, numCols) {
-  const startCell = table.rows[startRow].cells[startCol];
-  startCell.rowSpan = numRows;
-  startCell.colSpan = numCols;
+function mergeCells(mergedCells) {
+  mergedCells.forEach((mergeInfo) => {
+    const { row, column, numRows, numColumns } = mergeInfo;
+    const table = document.getElementById("dataTable");
 
-  for (let r = startRow; r < startRow + numRows; r++) {
-    for (let c = startCol; c < startCol + numCols; c++) {
-      if (r === startRow && c === startCol) continue;
-      table.rows[r].deleteCell(startCol);
+    // Get the first cell
+    const firstCell = table.rows[row].cells[column];
+
+    // Set rowSpan and colSpan
+    firstCell.rowSpan = numRows;
+    firstCell.colSpan = numColumns;
+
+    // Delete the other cells that are merged into the first cell
+    for (let r = row; r < row + numRows; r++) {
+      for (let c = column + (r === row ? 1 : 0); c < column + numColumns; c++) {
+        table.rows[r].deleteCell(column + (r === row ? 1 : 0));
+      }
     }
-  }
+  });
 }
-
-document.addEventListener('DOMContentLoaded', fetchDataAndRenderTable);
