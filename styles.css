@@ -1,29 +1,33 @@
-body {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f0f0f0;
-    overflow: hidden; /* 스크롤 제거 */
-}
-
-#data-table {
-    margin: 0 auto;
-    width: 90%; /* 테이블이 화면에 꽉 차지 않도록 조정 */
-    display: table;
+/* 테이블 스타일 */
+table {
+    width: 100%;
     border-collapse: collapse;
-    background-color: white;
-    table-layout: fixed; /* 테이블 셀 크기를 고정 */
 }
 
-#data-table td {
-    border: 1px solid #333;
+td, th {
+    border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
     vertical-align: middle;
-    white-space: nowrap;
-    overflow: hidden; /* 텍스트가 넘치지 않도록 */
-    text-overflow: ellipsis;
+}
+
+th {
+    background-color: #2a4b72;
+    color: white;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+tr:hover {
+    background-color: #ddd;
+}
+
+/* 필요한 추가 스타일 */
+#data-table {
+    margin: auto;
+    width: auto;
+    table-layout: auto;
 }
