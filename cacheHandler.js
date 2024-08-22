@@ -1,5 +1,5 @@
 function fetchDataAndRender() {
-    fetch('https://script.google.com/macros/s/AKfycbxlWGaTrXFykS1al6avOG4L3rq2SxCg5TEXEspr3x99x5a6HcNZkGMgbiPDB-lWFn1ptQ/exec')
+    fetch('https://script.google.com/macros/s/AKfycbwSQwQH5mUA9bTW8VP09eR_uO-MroUDvQy29COsAZ51hYx6_InNu14liAJs8HtXcU9xlA/exec')
         .then(response => response.json())
         .then(data => {
             console.log("Fetched data:", data); // 데이터를 확인합니다.
