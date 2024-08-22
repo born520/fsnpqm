@@ -1,4 +1,3 @@
-// 데이터 가져오기
 async function fetchDataAndRenderTable() {
     try {
         const response = await fetch('https://script.google.com/macros/s/AKfycbw0NE9hOXBO2-M8xC4KBNa3QasFUvnvey3ODAnl9cRQmS6Snb5yly_3xJmYOIpE4DixnQ/exec');
@@ -9,9 +8,8 @@ async function fetchDataAndRenderTable() {
     }
 }
 
-// 테이블 렌더링
 function renderTable(data) {
-    const table = document.getElementById('dataTable'); // HTML의 id와 일치
+    const table = document.getElementById('dataTable');
     if (!table) {
         console.error("Table element with id 'dataTable' not found.");
         return;
@@ -20,10 +18,10 @@ function renderTable(data) {
     const tableData = data.tableData;
     const mergedCells = data.mergedCells;
 
-    // 기존 테이블 내용 제거
+    // Clear existing table content
     table.innerHTML = '';
 
-    // 테이블 셀 추가
+    // Create table rows and cells
     tableData.forEach((row, rowIndex) => {
         const tr = table.insertRow();
         row.forEach((cell, cellIndex) => {
@@ -36,19 +34,21 @@ function renderTable(data) {
             td.style.fontWeight = data.fontWeights[rowIndex][cellIndex];
             td.style.fontStyle = data.fontStyles[rowIndex][cellIndex];
             td.style.fontSize = `${data.fontSizes[rowIndex][cellIndex]}px`;
-            td.style.border = '1px solid black'; // 테두리 스타일 추가
+            td.style.border = '1px solid black'; // Add border styling
         });
     });
 
-    // 셀 병합 처리
+    // Merge cells based on the data provided
     mergedCells.forEach(merge => {
         const startCell = table.rows[merge.row].cells[merge.column];
-        startCell.rowSpan = merge.numRows;
-        startCell.colSpan = merge.numColumns;
+        if (startCell) {
+            startCell.rowSpan = merge.numRows;
+            startCell.colSpan = merge.numColumns;
+        }
 
         for (let i = 0; i < merge.numRows; i++) {
             for (let j = 0; j < merge.numColumns; j++) {
-                if (i === 0 && j === 0) continue; // 시작 셀은 유지
+                if (i === 0 && j === 0) continue; // Skip the starting cell
                 const rowIndex = merge.row + i;
                 const cellIndex = merge.column + j;
                 if (table.rows[rowIndex] && table.rows[rowIndex].cells[cellIndex]) {
@@ -59,5 +59,4 @@ function renderTable(data) {
     });
 }
 
-// 페이지가 로드되면 데이터 가져오기 및 테이블 렌더링
 document.addEventListener('DOMContentLoaded', fetchDataAndRenderTable);
