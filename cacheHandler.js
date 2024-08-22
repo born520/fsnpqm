@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", function() {
             horizontalAlignments: [],
             verticalAlignments: [],
             mergedCells: [
+                { row: 0, col: 0, rowSpan: 2, colSpan: 2 },
                 // 병합 셀에 대한 정보 추가
             ],
         };
