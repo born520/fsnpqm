@@ -11,8 +11,8 @@ body {
 
 #data-table {
     border-collapse: collapse;
-    width: 80%;
-    margin: 0 auto;
+    width: 90%;  /* 테이블 너비 조정 */
+    margin: 20px auto;  /* 테이블 중앙 정렬 */
 }
 
 #data-table td, #data-table th {
@@ -24,4 +24,9 @@ body {
 #data-table th {
     background-color: #4CAF50;
     color: white;
+}
+
+td[rowspan], td[colspan] {
+    text-align: center;
+    vertical-align: middle;
 }
