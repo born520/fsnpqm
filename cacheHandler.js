@@ -51,7 +51,9 @@ function renderTable(data) {
         for (let i = merge.row; i < merge.row + merge.numRows; i++) {
             for (let j = merge.column; j < merge.column + merge.numColumns; j++) {
                 if (i === merge.row && j === merge.column) continue;
-                table.rows[i].deleteCell(merge.column);
+                if (table.rows[i] && table.rows[i].cells[j]) {
+                    table.rows[i].deleteCell(j);
+                }
             }
         }
     });
