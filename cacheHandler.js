@@ -26,11 +26,11 @@ function renderTable(data) {
                 td.style.textAlign = data.horizontalAlignments[rowIndex][cellIndex];
                 td.style.verticalAlign = data.verticalAlignments[rowIndex][cellIndex];
 
-                if (cell.rowSpan) {
+                if (cell.rowSpan && cell.rowSpan > 1) {
                     td.rowSpan = cell.rowSpan;
                 }
 
-                if (cell.colSpan) {
+                if (cell.colSpan && cell.colSpan > 1) {
                     td.colSpan = cell.colSpan;
                 }
 
