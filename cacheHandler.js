@@ -16,12 +16,11 @@ function fetchDataAndRenderTable() {
 }
 
 function getCachedData() {
-    const cachedData = localStorage.getItem('cachedData_' + pageKey);
-    return cachedData ? JSON.parse(cachedData) : null;
+    return JSON.parse(localStorage.getItem('cachedData'));
 }
 
 function setCachedData(data) {
-    localStorage.setItem('cachedData_' + pageKey, JSON.stringify(data));
+    localStorage.setItem('cachedData', JSON.stringify(data));
 }
 
 function renderTable(data) {
