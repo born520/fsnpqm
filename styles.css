@@ -6,6 +6,7 @@ body {
     align-items: center;
     height: 100vh;
     background-color: #f0f0f0;
+    overflow: hidden; /* 스크롤 제거 */
 }
 
 #data-table {
@@ -14,6 +15,8 @@ body {
     display: table;
     border-collapse: collapse;
     background-color: white;
+    max-width: 100%; /* 테이블이 화면을 넘지 않도록 설정 */
+    table-layout: fixed; /* 테이블 셀 크기를 고정 */
 }
 
 #data-table td {
@@ -22,4 +25,6 @@ body {
     text-align: center;
     vertical-align: middle;
     white-space: nowrap;
+    overflow: hidden; /* 텍스트가 넘치지 않도록 */
+    text-overflow: ellipsis;
 }
