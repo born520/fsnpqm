@@ -1,42 +1,25 @@
 body {
-    font-family: Arial, sans-serif;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
     margin: 0;
-    table-layout: fixed; /* 테이블 셀 너비를 고정 */
-}
-
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
-    vertical-align: middle;
-}
-
-th {
-    background-color: #4CAF50;
-    color: white;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
 }
 
 #data-table {
-    margin-top: 0; /* 테이블 위의 공간 제거 */
-    width: 100%; /* 테이블을 페이지의 전체 너비에 맞춤 */
+    margin: 0 auto;
+    width: auto;
+    display: table;
+    border-collapse: collapse;
+    background-color: white;
 }
 
-.merged-cell {
-    background-color: #f2f2f2;
-    font-weight: bold;
+#data-table td {
+    border: 1px solid #333;
+    padding: 8px;
     text-align: center;
-}
-
-.header-cell {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.empty-cell {
-    background-color: #f9f9f9;
+    vertical-align: middle;
+    white-space: nowrap;
 }
