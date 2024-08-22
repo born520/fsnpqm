@@ -55,4 +55,12 @@ function renderTable(data) {
             }
         }
     });
+
+    // Apply border styles to all cells
+    for (let i = 0; i < table.rows.length; i++) {
+        for (let j = 0; j < table.rows[i].cells.length; j++) {
+            const cell = table.rows[i].cells[j];
+            cell.style.border = "1px solid #000"; // apply black border to all cells
+        }
+    }
 }
