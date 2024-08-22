@@ -50,12 +50,11 @@ function renderTable(data) {
         startCell.rowSpan = merge.numRows;
         startCell.colSpan = merge.numColumns;
 
-        for (let i = merge.row; i < merge.row + merge.numRows; i++) {
-            for (let j = merge.column; j < merge.column + merge.numColumns; j++) {
-                if (i === merge.row && j === merge.column) continue;
-                if (table.rows[i] && table.rows[i].cells[j]) {
-                    table.rows[i].deleteCell(j - merge.column);
-                }
+        for (let i = 0; i < merge.numRows; i++) {
+            for (let j = 0; j < merge.numColumns; j++) {
+                if (i === 0 && j === 0) continue;
+                const cell = table.rows[merge.row + i].cells[merge.column + j];
+                if (cell) table.rows[merge.row + i].deleteCell(merge.column + j);
             }
         }
     });
